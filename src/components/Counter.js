@@ -1,5 +1,5 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const defaultValue = 20;
 const longPressStep = 5;
@@ -19,14 +19,15 @@ export default function Counter({
     increment: false,
     decrement: false,
   });
+  const intervalRef = useRef(null);
 
-  const handleCounterChange = (mode, step = 1) => {
+  const updateCounter = (mode, step = 1) => {
     switch (mode) {
       case counterModes.INCREMENT:
-        setCounter(counter + step);
+        setCounter((prevCounter)=>prevCounter + step);
         break;
       case counterModes.DECREMENT:
-        setCounter(counter - step);
+        setCounter((prevCounter)=>prevCounter - step);
         break;
       default:
         console.log("Mode not supported");
@@ -38,7 +39,14 @@ export default function Counter({
   };
 
   const handlePressOut = (mode) => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setIsPressed({ ...isPressed, [mode]: false });
+  };
+
+  const handleLongPress = (mode) => {
+    intervalRef.current = setInterval(() => {
+      updateCounter(mode, longPressStep)
+    }, 700);
   };
 
   const containerStyle = {
@@ -49,7 +57,7 @@ export default function Counter({
 
   return (
     <View style={containerStyle}>
-      <Text style={styles.counterText}>{counter}</Text>
+      <Text selectable={false} style={styles.counterText}>{counter}</Text>
       <View
         style={[
           styles.buttonsWrapper,
@@ -65,14 +73,12 @@ export default function Counter({
                 : "transparent",
             },
           ]}
-          onPress={() => handleCounterChange(counterModes.DECREMENT)}
-          onLongPress={() =>
-            handleCounterChange(counterModes.DECREMENT, longPressStep)
-          }
+          onPress={() => updateCounter(counterModes.DECREMENT)}
+          onLongPress={()=>handleLongPress(counterModes.DECREMENT)}
           onPressIn={() => handlePressIn(counterModes.DECREMENT)}
           onPressOut={() => handlePressOut(counterModes.DECREMENT)}
         >
-          <Text style={styles.counterButtonText}>-</Text>
+          <Text selectable={false} style={styles.counterButtonText}>-</Text>
         </Pressable>
         <Pressable
           style={[
@@ -83,14 +89,12 @@ export default function Counter({
                 : "transparent",
             },
           ]}
-          onPress={() => handleCounterChange(counterModes.INCREMENT)}
-          onLongPress={() =>
-            handleCounterChange(counterModes.INCREMENT, longPressStep)
-          }
+          onPress={() => updateCounter(counterModes.INCREMENT)}
+          onLongPress={() => handleLongPress(counterModes.INCREMENT, longPressStep)}
           onPressIn={() => handlePressIn(counterModes.INCREMENT)}
           onPressOut={() => handlePressOut(counterModes.INCREMENT)}
         >
-          <Text style={styles.counterButtonText}>+</Text>
+          <Text selectable={false} style={styles.counterButtonText}>+</Text>
         </Pressable>
       </View>
     </View>

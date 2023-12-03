@@ -16,6 +16,12 @@ C: Correcciones de bugs de la serie B.
 -->
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added a feature to increment/decrement by 5 when the button is held down.
+
 ## [0.1.0] 2023/12/02
 
 ### Added
