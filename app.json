@@ -2,8 +2,9 @@
   "expo": {
     "name": "life-counter",
     "slug": "life-counter",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
+    "scheme": "life-counter",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -11,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -31,6 +30,7 @@
       "eas": {
         "projectId": "7e224b3d-efa4-4a73-b99f-905c9d4c7f0c"
       }
-    }
+    },
+    "plugins": ["expo-router"]
   }
 }

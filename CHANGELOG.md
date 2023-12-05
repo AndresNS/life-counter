@@ -14,13 +14,16 @@ A: Cambio sustancial en la estructura o en la manera de operar la aplicación.
 B: Nuevas características, nuevas funcionalidades y conjunto de grandes correcciones.
 C: Correcciones de bugs de la serie B.
 -->
+
 # Changelog
 
-## [Unreleased]
+## [0.2.0] 2023/12/05
 
 ### Added
 
 - Added a feature to increment/decrement by 5 when the button is held down.
+- Added basic homepage with a button to start a new game.
+- Added feature to select starting life for the counter.
 
 ## [0.1.0] 2023/12/02
 
