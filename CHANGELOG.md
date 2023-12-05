@@ -17,6 +17,12 @@ C: Correcciones de bugs de la serie B.
 
 # Changelog
 
+## [0.2.1] 2023/12/05
+
+### Fixed
+
+- The screen no longer turns off due to inactivity.
+
 ## [0.2.0] 2023/12/05
 
 ### Added
