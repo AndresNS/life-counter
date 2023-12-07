@@ -1,13 +1,14 @@
+import { useKeepAwake } from "expo-keep-awake";
+import { useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 
-import { useKeepAwake } from "expo-keep-awake";
 import Counter from "../src/components/Counter";
-import { useLocalSearchParams } from "expo-router";
 
-export default function Game() {
+export default function Game(): JSX.Element {
   const params = useLocalSearchParams();
   const { startingLife } = params;
+  console.log("params in Game", params);
   useKeepAwake();
 
   return (

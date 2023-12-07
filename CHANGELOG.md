@@ -17,6 +17,12 @@ C: Correcciones de bugs de la serie B.
 
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added feature to save presets for quick access from homepage.
+
 ## [0.2.1] 2023/12/05
 
 ### Fixed
