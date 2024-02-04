@@ -1,10 +1,16 @@
-import { useRef, useState } from "react";
+import { RootState } from "@store/configureStore";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
+import { increment, decrement, set } from "./counterSlice";
+import palette from "@constants/colors";
 
 interface ICounterProps {
   backgroundColor?: string;
   startingLife: number;
   flip?: boolean;
+  playerId: number;
 }
 
 enum CounterModes {
@@ -18,21 +24,34 @@ export default function Counter({
   backgroundColor,
   startingLife,
   flip,
+  playerId,
 }: ICounterProps): JSX.Element {
-  const [lifeTotal, setLifeTotal] = useState(startingLife || 20);
+  const dispatch = useDispatch();
+  const [startingLifeTotal, setStartingLifeTotal] = useState<number | null>(startingLife);
+  const lifeTotal = useSelector((state: RootState) => state.counter[playerId].lifeTotal);
   const [isPressed, setIsPressed] = useState({
     increment: false,
     decrement: false,
   });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
+    dispatch(set({ playerId, value: startingLife }));
+    if (startingLifeTotal !== null) setStartingLifeTotal(null);
+  }, [dispatch, playerId, startingLife]);
+
+  const displayedLifeTotal = useMemo(
+    () => (isNaN(lifeTotal) ? startingLifeTotal : lifeTotal),
+    [lifeTotal],
+  );
+
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        setLifeTotal((prevCounter) => prevCounter + step);
+        dispatch(increment({ playerId, step }));
         break;
       case CounterModes.Decrement:
-        setLifeTotal((prevCounter) => prevCounter - step);
+        dispatch(decrement({ playerId, step }));
         break;
       default:
         console.log("Mode not supported");
@@ -58,14 +77,14 @@ export default function Counter({
 
   const containerStyle = {
     ...styles.counterContainer,
-    backgroundColor: backgroundColor || "#369",
+    backgroundColor: backgroundColor || palette.customs[1],
     ...(flip && { transform: [{ rotate: flip ? "180deg" : "0deg" }] }),
   };
 
   return (
     <View style={containerStyle}>
       <Text selectable={false} style={styles.counterText}>
-        {lifeTotal}
+        {displayedLifeTotal}
       </Text>
       <View style={styles.buttonsWrapper}>
         <Pressable
