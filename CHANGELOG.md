@@ -47,6 +47,12 @@ Versioning Example:
 
 # Changelog
 
+## [0.3.2]
+
+### Fixed
+
+- Fixed reset button positioning in some screens.
+
 ## [0.3.1]
 
 ### Changed
