@@ -27,10 +27,12 @@ export default function Game(): JSX.Element {
         playerId={1}
         flip
       />
-      <View>
-        <Pressable onPress={handleResetPress}>
-          <FontAwesome name="refresh" style={styles.resetButton} />
-        </Pressable>
+      <View style={styles.divider}>
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={handleResetPress}>
+            <FontAwesome name="refresh" style={styles.resetButton} />
+          </Pressable>
+        </View>
       </View>
       <Counter
         backgroundColor={palette.customs[5]}
@@ -45,18 +47,35 @@ export default function Game(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    backgroundColor: "#000",
+    backgroundColor: palette.neutrals.black,
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
     height: "100%",
-    gap: 8,
+    gap: 6,
     padding: 5,
   },
+  divider: {
+    position: "relative",
+    width: "100%",
+    zIndex: 999,
+  },
+  buttonContainer: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: "translateX(-50%) translateY(-50%)",
+    borderRadius: 50,
+    padding: 6,
+    backgroundColor: palette.neutrals.black,
+  },
   resetButton: {
-    color: "#ffffff",
-    backgroundColor: "#333333",
-    fontSize: 24,
-    padding: 8,
+    color: palette.neutrals.white,
+    fontSize: 30,
+    borderColor: palette.neutrals.black,
+    borderWidth: 2,
+    borderRadius: 50,
+    backgroundColor: palette.neutrals.black,
+    padding: 4,
   },
 });

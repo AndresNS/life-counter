@@ -1,10 +1,10 @@
+import palette from "@constants/colors";
 import { RootState } from "@store/configureStore";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { increment, decrement, set } from "./counterSlice";
-import palette from "@constants/colors";
 
 interface ICounterProps {
   backgroundColor?: string;

@@ -47,6 +47,12 @@ Versioning Example:
 
 # Changelog
 
+## [0.3.1]
+
+### Changed
+
+- Changed reset button styles.
+
 ## [0.3.0]
 
 ### Added
