@@ -1,5 +1,10 @@
-type Player = {
+export type Player = {
   backgroundColor: string;
 };
 
-export { Player };
+export type Preset = {
+  id: string | number[];
+  name: string;
+  startingLife: number;
+  players: Player[];
+};

@@ -2,10 +2,13 @@ import Button from "@common/components/Button";
 import DefaultLayout from "@common/layouts/default";
 import palette from "@constants/colors";
 import PresetList from "@features/presets/PresetsList";
+import { usePresetsContext } from "@features/presets/presetsContext";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function Homepage(): JSX.Element {
+  const { presets } = usePresetsContext();
+
   const handleButtonPress = () => {
     router.push("/new-game");
   };
@@ -14,7 +17,7 @@ export default function Homepage(): JSX.Element {
     <DefaultLayout>
       <View style={styles.container}>
         <View style={styles.listContainer}>
-          <PresetList />
+          <PresetList presets={presets} />
         </View>
         <Button text="New" onPress={handleButtonPress} style={styles.button} />
       </View>

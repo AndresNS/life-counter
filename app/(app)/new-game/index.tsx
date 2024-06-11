@@ -2,16 +2,13 @@ import Button from "@common/components/Button";
 import DefaultLayout from "@common/layouts/default";
 import palette from "@constants/colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { Preset, createPreset } from "@features/presets/presetSlice";
-import { Player } from "@features/presets/types";
-import { AppDispatch } from "@store/configureStore";
-import Checkbox from "expo-checkbox";
+import { usePresetsContext } from "@features/presets/presetsContext";
+import { Player, Preset } from "@features/presets/types";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { Dialog, Portal, Button as ButtonRN } from "react-native-paper";
+import { Dialog, Portal, Button as ButtonRN, Checkbox } from "react-native-paper";
 import uuid from "react-native-uuid";
-import { useDispatch } from "react-redux";
 
 const startingLifeValues = [20, 40, 100];
 const totalPlayersValues = [2, 3, 4];
@@ -21,8 +18,7 @@ const defaultPlayers: Player[] = [
 ];
 
 export default function NewGame(): JSX.Element {
-  const dispatch = useDispatch<AppDispatch>();
-
+  const { addPreset } = usePresetsContext();
   const [startingLifeIndex, setStartingLifeIndex] = useState(0);
   const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [presetName, setPresetName] = useState("");
@@ -45,9 +41,7 @@ export default function NewGame(): JSX.Element {
       players: defaultPlayers,
     };
 
-    if (saveAsPreset) {
-      dispatch(createPreset(newPreset));
-    }
+    if (saveAsPreset) addPreset(newPreset);
 
     router.replace({ pathname: "/game", params: newPreset });
   };
@@ -155,14 +149,18 @@ export default function NewGame(): JSX.Element {
               <Text style={styles.checkboxLabel}>Timer</Text>
             </View>
           </View>*/}
-          <View style={styles.section}>
-            <View style={styles.checkboxContainer}>
-              <Checkbox value={saveAsPreset} onValueChange={setSaveAsPreset} />
-              <Text style={styles.checkboxLabel}>Save as preset</Text>
-            </View>
-          </View>
+          {/* <View style={styles.section}> */}
+          <Checkbox.Item
+            label="Save as preset"
+            status={saveAsPreset ? "checked" : "unchecked"}
+            onPress={() => setSaveAsPreset(!saveAsPreset)}
+            position="leading"
+            color={palette.primary[500]}
+            labelStyle={styles.checkboxLabel}
+          />
+          {/* </View> */}
           {saveAsPreset && (
-            <View>
+            <View style={styles.presetNameInput}>
               <TextInput
                 placeholder="Preset Name"
                 style={styles.textInput}
@@ -226,16 +224,11 @@ const styles = StyleSheet.create({
   submitButton: {
     width: "80%",
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  checkboxLabel: {
-    color: "#fff",
-  },
   textInput: {
     backgroundColor: palette.grays[100],
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    lineHeight: 25,
   },
   dialog: {
     backgroundColor: palette.grays[900],
@@ -243,5 +236,9 @@ const styles = StyleSheet.create({
   },
   dialogTitle: {
     color: palette.neutrals.white,
+  },
+  checkboxLabel: { textAlign: "left" },
+  presetNameInput: {
+    paddingHorizontal: 20,
   },
 });

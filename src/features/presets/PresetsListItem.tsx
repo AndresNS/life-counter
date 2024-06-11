@@ -1,29 +1,21 @@
 import palette from "@constants/colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { AppDispatch } from "@store/configureStore";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Dialog, Menu, Portal } from "react-native-paper";
-import { useDispatch } from "react-redux";
 
-import { Preset, deletePreset, editPreset } from "./presetSlice";
-import { Player } from "./types";
+import { usePresetsContext } from "./presetsContext";
+import { Preset } from "./types";
 
 interface IPresetListItemProps {
-  id: string | number[];
-  name: string;
-  startingLife: number;
-  players: Player[];
+  preset: Preset;
 }
 
 export default function PresetListItem({
-  id,
-  name,
-  startingLife,
-  players,
+  preset: { id, name, startingLife, players },
 }: IPresetListItemProps): JSX.Element {
-  const dispatch = useDispatch<AppDispatch>();
+  const { editPreset, deletePreset } = usePresetsContext();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -35,12 +27,14 @@ export default function PresetListItem({
   };
 
   const openMenu = () => setMenuVisible(true);
+
   const closeMenu = () => setMenuVisible(false);
 
   const openEditDialog = () => {
-    setMenuVisible(false);
+    closeMenu();
     setEditDialogVisible(true);
   };
+
   const closeEditDialog = () => setEditDialogVisible(false);
 
   const confirmEdit = () => {
@@ -53,20 +47,21 @@ export default function PresetListItem({
       players,
     };
 
-    dispatch(editPreset(updatedPreset));
+    editPreset(updatedPreset);
   };
 
   const openDeleteDialog = () => {
-    setMenuVisible(false);
+    closeMenu();
     setDeleteDialogVisible(true);
   };
+
   const closeDeleteDialog = () => setDeleteDialogVisible(false);
 
   const confirmDelete = () => {
     closeDeleteDialog();
     // set Loading
 
-    dispatch(deletePreset(id));
+    deletePreset(id);
   };
 
   return (
@@ -85,28 +80,26 @@ export default function PresetListItem({
             </View>
           </View>
         </View>
-        <View>
-          <Menu
-            contentStyle={{ backgroundColor: palette.grays[900] }}
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <Pressable style={{ paddingHorizontal: 10, paddingBottom: 10 }} onPress={openMenu}>
-                <FontAwesome name="ellipsis-v" color={palette.neutrals.white} size={25} />
-              </Pressable>
-            }>
-            <Menu.Item
-              titleStyle={{ color: palette.neutrals.white }}
-              onPress={openEditDialog}
-              title="Edit"
-            />
-            <Menu.Item
-              titleStyle={{ color: palette.neutrals.white }}
-              onPress={openDeleteDialog}
-              title="Delete"
-            />
-          </Menu>
-        </View>
+        <Menu
+          contentStyle={{ backgroundColor: palette.grays[900] }}
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <Pressable style={styles.menuButton} onPress={openMenu}>
+              <FontAwesome name="ellipsis-v" color={palette.neutrals.white} size={25} />
+            </Pressable>
+          }>
+          <Menu.Item
+            titleStyle={{ color: palette.neutrals.white }}
+            onPress={openEditDialog}
+            title="Edit"
+          />
+          <Menu.Item
+            titleStyle={{ color: palette.neutrals.white }}
+            onPress={openDeleteDialog}
+            title="Delete"
+          />
+        </Menu>
         <Portal>
           <Dialog style={styles.dialog} visible={editDialogVisible} onDismiss={closeEditDialog}>
             <Dialog.Title style={styles.dialogTitle}>Edit Preset</Dialog.Title>
@@ -162,14 +155,14 @@ export default function PresetListItem({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: palette.grays[800],
-    paddingVertical: 16,
-    paddingHorizontal: 20,
     flexDirection: "row",
     borderRadius: 5,
     marginBottom: 10,
   },
   infoContainer: {
     flex: 1,
+    paddingVertical: 16,
+    paddingLeft: 20,
   },
   title: {
     color: palette.neutrals.white,
@@ -204,5 +197,11 @@ const styles = StyleSheet.create({
   dialogText: {
     color: palette.neutrals.white,
     fontSize: 16,
+  },
+  menuButton: {
+    flex: 1,
+    padding: 15,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
 });

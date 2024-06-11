@@ -1,16 +1,17 @@
 import palette from "@constants/colors";
-import { RootState } from "@store/configureStore";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 
-import { increment, decrement, set } from "./counterSlice";
+type LifeTotal = {
+  [key: string]: number;
+};
 
 interface ICounterProps {
   backgroundColor?: string;
-  startingLife: number;
+  lifeTotal: number;
   flip?: boolean;
-  playerId: number;
+  playerId: string;
+  setLifeTotal: React.Dispatch<React.SetStateAction<LifeTotal>>;
 }
 
 enum CounterModes {
@@ -22,36 +23,30 @@ const longPressStep = 5;
 
 export default function Counter({
   backgroundColor,
-  startingLife,
+  lifeTotal,
   flip,
   playerId,
+  setLifeTotal,
 }: ICounterProps): JSX.Element {
-  const dispatch = useDispatch();
-  const [startingLifeTotal, setStartingLifeTotal] = useState<number | null>(startingLife);
-  const lifeTotal = useSelector((state: RootState) => state.counter[playerId].lifeTotal);
   const [isPressed, setIsPressed] = useState({
     increment: false,
     decrement: false,
   });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    dispatch(set({ playerId, value: startingLife }));
-    if (startingLifeTotal !== null) setStartingLifeTotal(null);
-  }, [dispatch, playerId, startingLife]);
-
-  const displayedLifeTotal = useMemo(
-    () => (isNaN(lifeTotal) ? startingLifeTotal : lifeTotal),
-    [lifeTotal],
-  );
-
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        dispatch(increment({ playerId, step }));
+        setLifeTotal((prevLifeTotal) => ({
+          ...prevLifeTotal,
+          [playerId]: prevLifeTotal[playerId] + step,
+        }));
         break;
       case CounterModes.Decrement:
-        dispatch(decrement({ playerId, step }));
+        setLifeTotal((prevLifeTotal) => ({
+          ...prevLifeTotal,
+          [playerId]: prevLifeTotal[playerId] - step,
+        }));
         break;
       default:
         console.log("Mode not supported");
@@ -84,7 +79,7 @@ export default function Counter({
   return (
     <View style={containerStyle}>
       <Text selectable={false} style={styles.counterText}>
-        {displayedLifeTotal}
+        {lifeTotal}
       </Text>
       <View style={styles.buttonsWrapper}>
         <Pressable
