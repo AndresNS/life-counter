@@ -23,7 +23,7 @@ export default function Header({ title }: HeaderProps): JSX.Element {
       </View>
       <View style={styles.logoContainer}>
         <Text style={styles.logo}>{title}</Text>
-        <Text style={styles.version}>{process.env.EXPO_PUBLIC_APP_VERSION}</Text>
+        {isHomePage() && <Text style={styles.version}>{process.env.EXPO_PUBLIC_APP_VERSION}</Text>}
       </View>
       <View style={styles.menu}>
         {/*        <FontAwesome name="bars" color={palette.neutrals.white} size={20} />*/}

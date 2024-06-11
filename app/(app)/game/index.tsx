@@ -1,4 +1,5 @@
 import palette from "@constants/colors";
+import { LifeTotal } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import Counter from "@features/counter/Counter";
 import { useKeepAwake } from "expo-keep-awake";
@@ -12,7 +13,7 @@ export default function Game(): JSX.Element {
   const params = useLocalSearchParams();
   const { startingLife } = params;
 
-  const [lifeTotals, setLifeTotals] = useState({
+  const [lifeTotals, setLifeTotals] = useState<LifeTotal>({
     "1": Number(startingLife),
     "2": Number(startingLife),
   });

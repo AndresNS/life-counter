@@ -1,10 +1,7 @@
 import palette from "@constants/colors";
+import { LifeTotal } from "@constants/types";
 import { useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text } from "react-native";
-
-type LifeTotal = {
-  [key: string]: number;
-};
 
 interface ICounterProps {
   backgroundColor?: string;
