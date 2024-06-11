@@ -1,10 +1,17 @@
+import palette from "@constants/colors";
 import { useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text } from "react-native";
 
+type LifeTotal = {
+  [key: string]: number;
+};
+
 interface ICounterProps {
   backgroundColor?: string;
-  startingLife: number;
+  lifeTotal: number;
   flip?: boolean;
+  playerId: string;
+  setLifeTotal: React.Dispatch<React.SetStateAction<LifeTotal>>;
 }
 
 enum CounterModes {
@@ -16,10 +23,11 @@ const longPressStep = 5;
 
 export default function Counter({
   backgroundColor,
-  startingLife,
+  lifeTotal,
   flip,
+  playerId,
+  setLifeTotal,
 }: ICounterProps): JSX.Element {
-  const [lifeTotal, setLifeTotal] = useState(startingLife || 20);
   const [isPressed, setIsPressed] = useState({
     increment: false,
     decrement: false,
@@ -29,10 +37,16 @@ export default function Counter({
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        setLifeTotal((prevCounter) => prevCounter + step);
+        setLifeTotal((prevLifeTotal) => ({
+          ...prevLifeTotal,
+          [playerId]: prevLifeTotal[playerId] + step,
+        }));
         break;
       case CounterModes.Decrement:
-        setLifeTotal((prevCounter) => prevCounter - step);
+        setLifeTotal((prevLifeTotal) => ({
+          ...prevLifeTotal,
+          [playerId]: prevLifeTotal[playerId] - step,
+        }));
         break;
       default:
         console.log("Mode not supported");
@@ -58,7 +72,7 @@ export default function Counter({
 
   const containerStyle = {
     ...styles.counterContainer,
-    backgroundColor: backgroundColor || "#369",
+    backgroundColor: backgroundColor || palette.customs[1],
     ...(flip && { transform: [{ rotate: flip ? "180deg" : "0deg" }] }),
   };
 
