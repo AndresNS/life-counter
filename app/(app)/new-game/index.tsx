@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     color: palette.neutrals.white,
   },
   dialogButton: { paddingHorizontal: 10 },
-  checkboxLabel: { textAlign: "left" },
+  checkboxLabel: { color: palette.neutrals.white, textAlign: "left" },
   presetNameInput: {
     paddingHorizontal: 20,
   },
