@@ -43,23 +43,27 @@ Versioning Example:
 1.0.0
 -->
 
-
-
 # Changelog
 
-## [0.3.2]
+## [0.3.3] 2024/06/11
+
+### Changed
+
+- Updated dialog buttons and expanded the action area of the preset item menu button.
+
+## [0.3.2] 2024/02/26
 
 ### Fixed
 
 - Fixed reset button positioning in some screens.
 
-## [0.3.1]
+## [0.3.1] 2024/02/26
 
 ### Changed
 
 - Changed reset button styles.
 
-## [0.3.0]
+## [0.3.0] 2024/02/04
 
 ### Added
 

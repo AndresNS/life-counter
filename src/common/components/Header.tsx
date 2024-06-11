@@ -23,6 +23,7 @@ export default function Header({ title }: HeaderProps): JSX.Element {
       </View>
       <View style={styles.logoContainer}>
         <Text style={styles.logo}>{title}</Text>
+        <Text style={styles.version}>{process.env.EXPO_PUBLIC_APP_VERSION}</Text>
       </View>
       <View style={styles.menu}>
         {/*        <FontAwesome name="bars" color={palette.neutrals.white} size={20} />*/}
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  version: { marginTop: 5, textAlign: "center", color: palette.grays[500] },
   menu: {
     width: 50,
     alignItems: "center",
