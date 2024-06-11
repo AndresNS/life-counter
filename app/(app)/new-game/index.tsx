@@ -113,11 +113,20 @@ export default function NewGame(): JSX.Element {
                   />
                 </Dialog.Content>
                 <Dialog.Actions>
-                  <ButtonRN onPress={closeDialog} textColor={palette.primary[500]}>
+                  <ButtonRN
+                    contentStyle={styles.dialogButton}
+                    mode="outlined"
+                    textColor={palette.neutrals.white}
+                    onPress={closeDialog}>
                     Cancel
                   </ButtonRN>
-                  <ButtonRN onPress={closeDialog} textColor={palette.primary[500]}>
-                    Ok
+                  <ButtonRN
+                    contentStyle={styles.dialogButton}
+                    mode="contained"
+                    buttonColor={palette.primary[500]}
+                    textColor={palette.neutrals.white}
+                    onPress={closeDialog}>
+                    Accept
                   </ButtonRN>
                 </Dialog.Actions>
               </Dialog>
@@ -237,6 +246,7 @@ const styles = StyleSheet.create({
   dialogTitle: {
     color: palette.neutrals.white,
   },
+  dialogButton: { paddingHorizontal: 10 },
   checkboxLabel: { textAlign: "left" },
   presetNameInput: {
     paddingHorizontal: 20,

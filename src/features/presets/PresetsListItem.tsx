@@ -122,11 +122,20 @@ export default function PresetListItem({
               </View>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button textColor={palette.primary[500]} onPress={closeEditDialog}>
+              <Button
+                mode="outlined"
+                contentStyle={styles.dialogButton}
+                textColor={palette.primary[500]}
+                onPress={closeEditDialog}>
                 Cancel
               </Button>
-              <Button textColor={palette.primary[500]} onPress={confirmEdit}>
-                Save
+              <Button
+                contentStyle={styles.dialogButton}
+                mode="contained"
+                buttonColor={palette.primary[500]}
+                textColor={palette.neutrals.white}
+                onPress={confirmEdit}>
+                Save Changes
               </Button>
             </Dialog.Actions>
           </Dialog>
@@ -138,10 +147,19 @@ export default function PresetListItem({
               <Text style={styles.dialogText}>Are you sure you want to delete this preset?</Text>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button textColor={palette.primary[500]} onPress={closeDeleteDialog}>
+              <Button
+                contentStyle={styles.dialogButton}
+                mode="outlined"
+                textColor={palette.neutrals.white}
+                onPress={closeDeleteDialog}>
                 No
               </Button>
-              <Button textColor={palette.primary[500]} onPress={confirmDelete}>
+              <Button
+                contentStyle={styles.dialogButton}
+                mode="contained"
+                buttonColor={palette.primary[500]}
+                textColor={palette.neutrals.white}
+                onPress={confirmDelete}>
                 Yes
               </Button>
             </Dialog.Actions>
@@ -198,6 +216,7 @@ const styles = StyleSheet.create({
     color: palette.neutrals.white,
     fontSize: 16,
   },
+  dialogButton: { paddingHorizontal: 10 },
   menuButton: {
     flex: 1,
     padding: 15,
