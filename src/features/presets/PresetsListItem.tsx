@@ -1,4 +1,6 @@
+import { isUniformArray } from "@common/lib/helpers";
 import palette from "@constants/colors";
+import { Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -12,18 +14,29 @@ interface IPresetListItemProps {
   preset: Preset;
 }
 
-export default function PresetListItem({
-  preset: { id, name, startingLife, players },
-}: IPresetListItemProps): JSX.Element {
+const getStartingLifes = (players: Player[]) => {
+  const startingLifes = players.map((player) => player.startingLife);
+
+  if (isUniformArray(startingLifes)) return [startingLifes[0]];
+
+  return startingLifes;
+};
+
+export default function PresetListItem({ preset }: IPresetListItemProps): JSX.Element {
   const { editPreset, deletePreset } = usePresetsContext();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [presetName, setPresetName] = useState(name);
-  const [presetStartingLife, setPresetStartingLife] = useState(startingLife.toString());
+  const [presetName, setPresetName] = useState(preset.name);
+  const [presetStartingLife, setPresetStartingLife] = useState(
+    getStartingLifes(preset.players)[0].toString(),
+  );
 
   const handleItemPress = () => {
-    router.push({ pathname: "/game", params: { name, startingLife, players } });
+    router.push({
+      pathname: "/game",
+      params: { ...preset, players: JSON.stringify(preset.players) },
+    });
   };
 
   const openMenu = () => setMenuVisible(true);
@@ -41,10 +54,12 @@ export default function PresetListItem({
     closeEditDialog();
     // set Loading
     const updatedPreset: Preset = {
-      id,
+      id: preset.id,
       name: presetName,
-      startingLife: Number(presetStartingLife),
-      players,
+      players: preset.players.map((player) => ({
+        ...player,
+        startingLife: Number(presetStartingLife),
+      })),
     };
 
     editPreset(updatedPreset);
@@ -61,22 +76,24 @@ export default function PresetListItem({
     closeDeleteDialog();
     // set Loading
 
-    deletePreset(id);
+    deletePreset(preset.id);
   };
 
   return (
     <Pressable onPress={handleItemPress}>
       <View style={styles.container}>
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>{name}</Text>
+          <Text style={styles.title}>{preset.name}</Text>
           <View style={styles.settings}>
             <View style={styles.settingItem}>
               <FontAwesome name="heart" color={palette.neutrals.white} size={25} />
-              <Text style={styles.settingItemLabel}>{startingLife}</Text>
+              <Text style={styles.settingItemLabel}>
+                {getStartingLifes(preset.players).join("/")}
+              </Text>
             </View>
             <View style={styles.settingItem}>
               <FontAwesome name="users" color={palette.neutrals.white} size={25} />
-              <Text style={styles.settingItemLabel}>{players.length}</Text>
+              <Text style={styles.settingItemLabel}>{preset.players.length}</Text>
             </View>
           </View>
         </View>
@@ -115,7 +132,7 @@ export default function PresetListItem({
                 <TextInput
                   placeholder="Starting Life"
                   style={styles.textInput}
-                  value={presetStartingLife}
+                  value={presetStartingLife.toString()}
                   onChangeText={setPresetStartingLife}
                   keyboardType="numeric"
                 />
