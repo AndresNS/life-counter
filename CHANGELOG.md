@@ -45,6 +45,16 @@ Versioning Example:
 
 # Changelog
 
+## [0.4.0] 2024/06/13
+
+### Added
+
+- Add support for 3 and 4 player games.
+
+### Changed
+
+- Change the order of the life total and total player info in the preset item.
+
 ## [0.3.3] 2024/06/11
 
 ### Changed
