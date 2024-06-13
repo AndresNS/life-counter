@@ -5,13 +5,13 @@ import Counter from "@features/counter/Counter";
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
-interface ThreePlayersLayoutProps {
+interface FourPlayersLayoutProps {
   players: Player[];
 }
 
-const totalPlayers = 3;
+const totalPlayers = 4;
 
-export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps): JSX.Element {
+export default function FourPlayersLayout({ players }: FourPlayersLayoutProps): JSX.Element {
   const startingLifeTotals = players.reduce((accum: LifeTotal, player: Player) => {
     accum[player.playerId] = player.startingLife;
     return accum;
@@ -23,7 +23,7 @@ export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps)
 
   return (
     <View style={styles.container}>
-      <View style={styles.topCounters}>
+      <View style={styles.counterContainer}>
         <Counter
           style={{ flex: 1 }}
           backgroundColor={players[0].backgroundColor}
@@ -50,12 +50,21 @@ export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps)
           </Pressable>
         </View>
       </View>
-      <View style={styles.bottomCounter}>
+      <View style={styles.counterContainer}>
         <Counter
           backgroundColor={players[2].backgroundColor}
           lifeTotal={lifeTotals[players[2].playerId]}
           playerId={players[2].playerId}
           setLifeTotal={setLifeTotals}
+          rotation="90"
+          totalPlayers={totalPlayers}
+        />
+        <Counter
+          backgroundColor={players[3].backgroundColor}
+          lifeTotal={lifeTotals[players[3].playerId]}
+          playerId={players[3].playerId}
+          setLifeTotal={setLifeTotals}
+          rotation="270"
           totalPlayers={totalPlayers}
         />
       </View>
@@ -72,13 +81,12 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 3,
   },
-  topCounters: {
-    flex: 1.5,
+  counterContainer: {
+    flex: 1,
     width: "100%",
     flexDirection: "row",
     gap: 5,
   },
-  bottomCounter: { flex: 1, width: "100%" },
   divider: {
     position: "relative",
     top: -25,
