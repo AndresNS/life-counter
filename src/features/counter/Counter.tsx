@@ -1,14 +1,16 @@
 import palette from "@constants/colors";
 import { LifeTotal } from "@constants/types";
 import { useRef, useState } from "react";
-import { StyleSheet, View, Pressable, Text } from "react-native";
+import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 interface ICounterProps {
   backgroundColor?: string;
   lifeTotal: number;
-  flip?: boolean;
+  rotation?: RotationKey;
   playerId: string;
   setLifeTotal: React.Dispatch<React.SetStateAction<LifeTotal>>;
+  style?: ViewStyle;
+  totalPlayers: number;
 }
 
 enum CounterModes {
@@ -16,14 +18,24 @@ enum CounterModes {
   Decrement = "decrement",
 }
 
+type RotationKey = keyof typeof rotationValues;
+
 const longPressStep = 5;
+const rotationValues = {
+  "0": "column",
+  "90": "row-reverse",
+  "180": "column-reverse",
+  "270": "row",
+} as const;
 
 export default function Counter({
   backgroundColor,
   lifeTotal,
-  flip,
+  rotation = "0",
   playerId,
   setLifeTotal,
+  style,
+  totalPlayers = 2,
 }: ICounterProps): JSX.Element {
   const [isPressed, setIsPressed] = useState({
     increment: false,
@@ -67,35 +79,33 @@ export default function Counter({
     }, 700);
   };
 
-  const containerStyle = {
+  const containerStyle: ViewStyle = {
     ...styles.counterContainer,
     backgroundColor: backgroundColor || palette.customs[1],
-    ...(flip && { transform: [{ rotate: flip ? "180deg" : "0deg" }] }),
+  };
+
+  const buttonsRotationStyle: ViewStyle = {
+    flexDirection: rotationValues[rotation],
+  };
+
+  const textRotationStyle: TextStyle = {
+    transform: [{ rotate: `${rotation}deg` }],
+  };
+
+  const counterTextStyle: TextStyle = {
+    fontSize: totalPlayers === 2 ? 150 : 100,
+  };
+
+  const buttonTextStyle: TextStyle = {
+    fontSize: totalPlayers === 2 ? 50 : 30,
   };
 
   return (
-    <View style={containerStyle}>
-      <Text selectable={false} style={styles.counterText}>
+    <View style={[containerStyle, style]}>
+      <Text selectable={false} style={[styles.counterText, textRotationStyle, counterTextStyle]}>
         {lifeTotal}
       </Text>
-      <View style={styles.buttonsWrapper}>
-        <Pressable
-          style={[
-            styles.counterButton,
-            {
-              backgroundColor: isPressed[CounterModes.Decrement]
-                ? "rgba(255,255,255,0.2)"
-                : "transparent",
-            },
-          ]}
-          onPress={() => updateCounter(CounterModes.Decrement)}
-          onLongPress={() => handleLongPress(CounterModes.Decrement)}
-          onPressIn={() => handlePressIn(CounterModes.Decrement)}
-          onPressOut={() => handlePressOut(CounterModes.Decrement)}>
-          <Text selectable={false} style={styles.counterButtonText}>
-            -
-          </Text>
-        </Pressable>
+      <View style={[styles.buttonsWrapper, buttonsRotationStyle]}>
         <Pressable
           style={[
             styles.counterButton,
@@ -109,8 +119,39 @@ export default function Counter({
           onLongPress={() => handleLongPress(CounterModes.Increment)}
           onPressIn={() => handlePressIn(CounterModes.Increment)}
           onPressOut={() => handlePressOut(CounterModes.Increment)}>
-          <Text selectable={false} style={styles.counterButtonText}>
+          <Text
+            selectable={false}
+            style={[
+              styles.counterButtonText,
+              textRotationStyle,
+              buttonTextStyle,
+              { paddingBottom: 20 },
+            ]}>
             +
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.counterButton,
+            {
+              backgroundColor: isPressed[CounterModes.Decrement]
+                ? "rgba(255,255,255,0.2)"
+                : "transparent",
+            },
+          ]}
+          onPress={() => updateCounter(CounterModes.Decrement)}
+          onLongPress={() => handleLongPress(CounterModes.Decrement)}
+          onPressIn={() => handlePressIn(CounterModes.Decrement)}
+          onPressOut={() => handlePressOut(CounterModes.Decrement)}>
+          <Text
+            selectable={false}
+            style={[
+              styles.counterButtonText,
+              textRotationStyle,
+              buttonTextStyle,
+              { paddingTop: 20 },
+            ]}>
+            -
           </Text>
         </Pressable>
       </View>
@@ -121,8 +162,7 @@ export default function Counter({
 const styles = StyleSheet.create({
   counterContainer: {
     display: "flex",
-    backgroundColor: "#aaa",
-    width: "100%",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     flexGrow: 1,
@@ -131,7 +171,6 @@ const styles = StyleSheet.create({
   buttonsWrapper: {
     position: "absolute",
     display: "flex",
-    flexDirection: "column-reverse",
     width: "100%",
     height: "100%",
   },
@@ -142,11 +181,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   counterButtonText: {
-    fontSize: 50,
     color: "#fff",
   },
   counterText: {
     color: "#fff",
-    fontSize: 150,
   },
 });

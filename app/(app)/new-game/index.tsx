@@ -1,9 +1,11 @@
 import Button from "@common/components/Button";
 import DefaultLayout from "@common/layouts/default";
+import { isUniformArray } from "@common/lib/helpers";
 import palette from "@constants/colors";
+import { Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { usePresetsContext } from "@features/presets/presetsContext";
-import { Player, Preset } from "@features/presets/types";
+import { Preset } from "@features/presets/types";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -12,21 +14,33 @@ import uuid from "react-native-uuid";
 
 const startingLifeValues = [20, 40, 100];
 const totalPlayersValues = [2, 3, 4];
-const defaultPlayers: Player[] = [
-  { backgroundColor: palette.customs[1] },
-  { backgroundColor: palette.customs[2] },
-];
 
 export default function NewGame(): JSX.Element {
   const { addPreset } = usePresetsContext();
   const [startingLifeIndex, setStartingLifeIndex] = useState(0);
+  const [totalPlayersIndex, setTotalPlayersIndex] = useState(0);
+  const [startingLife, setStartingLife] = useState("");
+  const [players, setPlayers] = useState<Player[]>([]);
+  // const [timer, setTimer] = useState(false);
   const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [presetName, setPresetName] = useState("");
-  const [totalPlayersIndex, setTotalPlayersIndex] = useState(0);
+
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [startingLife, setStartingLife] = useState("");
-  // const [timer, setTimer] = useState(false);
-  // const [players, setPlayers] = useState<Player[]>(defaultPlayers);
+
+  useEffect(() => {
+    const newPlayers = new Array(totalPlayersValues[totalPlayersIndex]).fill({});
+
+    setPlayers(
+      newPlayers.map(
+        (_, index): Player => ({
+          playerId: (index + 1).toString(),
+          backgroundColor: palette.customs[(index + 1).toString() as keyof typeof palette.customs],
+          startingLife: Number(startingLife),
+          lifeTotal: Number(startingLife),
+        }),
+      ),
+    );
+  }, [totalPlayersIndex, startingLife]);
 
   useEffect(() => {
     if (startingLifeIndex !== startingLifeValues.length)
@@ -37,13 +51,15 @@ export default function NewGame(): JSX.Element {
     const newPreset: Preset = {
       id: uuid.v4(),
       name: presetName,
-      startingLife: Number(startingLife),
-      players: defaultPlayers,
+      players,
     };
 
     if (saveAsPreset) addPreset(newPreset);
 
-    router.replace({ pathname: "/game", params: newPreset });
+    router.replace({
+      pathname: "/game",
+      params: { ...newPreset, players: JSON.stringify(players) },
+    });
   };
 
   const showDialog = () => setDialogVisible(true);
@@ -60,6 +76,24 @@ export default function NewGame(): JSX.Element {
     <DefaultLayout title="New Game">
       <View style={styles.container}>
         <View style={styles.settingsContainer}>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}> Players </Text>
+            <View style={styles.sectionOptions}>
+              {totalPlayersValues.map((totalPlayersValue, index) => (
+                <Pressable
+                  style={[
+                    styles.optionButton,
+                    index === totalPlayersIndex ? styles.optionButtonSelected : null,
+                  ]}
+                  key={index}
+                  onPress={() => setTotalPlayersIndex(index)}>
+                  <Text style={styles.optionText} selectable={false}>
+                    {totalPlayersValue}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}> Starting Life </Text>
             <View style={styles.sectionOptions}>
@@ -131,25 +165,6 @@ export default function NewGame(): JSX.Element {
                 </Dialog.Actions>
               </Dialog>
             </Portal>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}> Players </Text>
-            <View style={styles.sectionOptions}>
-              {totalPlayersValues.map((totalPlayersValue, index) => (
-                <Pressable
-                  style={[
-                    styles.optionButton,
-                    index === totalPlayersIndex ? styles.optionButtonSelected : null,
-                  ]}
-                  key={index}
-                  disabled={totalPlayersValue !== 2}
-                  onPress={() => setTotalPlayersIndex(index)}>
-                  <Text style={styles.optionText} selectable={false}>
-                    {totalPlayersValue}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
           </View>
           {/*          
           <View style={styles.section}>

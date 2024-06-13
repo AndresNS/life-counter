@@ -1,10 +1,7 @@
-export type Player = {
-  backgroundColor: string;
-};
+import { Player } from "@constants/types";
 
 export type Preset = {
   id: string | number[];
   name: string;
-  startingLife: number;
   players: Player[];
 };
