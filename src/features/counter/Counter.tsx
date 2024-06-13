@@ -1,6 +1,8 @@
 import palette from "@constants/colors";
 import { LifeTotal } from "@constants/types";
-import { useRef, useState } from "react";
+import { text } from "body-parser";
+import { argv0 } from "process";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 interface ICounterProps {
@@ -41,7 +43,27 @@ export default function Counter({
     increment: false,
     decrement: false,
   });
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [currentLifeTotal, setCurrentLifeTotal] = useState<number>(lifeTotal);
+  const [lifeChange, setLifeChange] = useState<number>(0);
+  const longPressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lifeChangeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    setLifeChange(lifeTotal - currentLifeTotal);
+
+    if (!lifeChangeIntervalRef.current) {
+      lifeChangeIntervalRef.current = setInterval(() => {
+        setCurrentLifeTotal(lifeTotal);
+        setLifeChange(0);
+      }, 2000);
+    } else {
+      clearInterval(lifeChangeIntervalRef.current);
+      lifeChangeIntervalRef.current = setInterval(() => {
+        setCurrentLifeTotal(lifeTotal);
+        setLifeChange(0);
+      }, 2000);
+    }
+  }, [lifeTotal]);
 
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
@@ -67,14 +89,14 @@ export default function Counter({
   };
 
   const handlePressOut = (mode: string): void => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
     setIsPressed({ ...isPressed, [mode]: false });
   };
 
   const handleLongPress = (mode: string): void => {
     updateCounter(mode, longPressStep);
 
-    intervalRef.current = setInterval(() => {
+    longPressIntervalRef.current = setInterval(() => {
       updateCounter(mode, longPressStep);
     }, 700);
   };
@@ -89,15 +111,52 @@ export default function Counter({
   };
 
   const textRotationStyle: TextStyle = {
-    transform: [{ rotate: `${rotation}deg` }],
+    transform: [{ rotate: `${Number(rotation) - 90}deg` }],
   };
 
   const counterTextStyle: TextStyle = {
-    fontSize: totalPlayers === 2 ? 150 : 100,
+    fontSize: totalPlayers === 2 ? 140 : 100,
   };
 
   const buttonTextStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 50 : 30,
+  };
+
+  const lifeChangeLabelStyle: TextStyle = {
+    fontSize: totalPlayers === 2 ? 30 : 20,
+  };
+
+  const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
+    switch (rotation) {
+      case "0":
+        return {
+          left: 0,
+          height: "100%",
+          width: "50%",
+        };
+      case "90":
+        return {
+          top: 0,
+          height: "50%",
+          width: "100%",
+        };
+      case "180":
+        return {
+          right: 0,
+          width: "50%",
+          height: "100%",
+        };
+      case "270":
+        return {
+          bottom: 0,
+          height: "50%",
+          width: "100%",
+        };
+    }
+  };
+
+  const labelRotationStyle: ViewStyle = {
+    ...getLabelRotationStyles(rotation),
   };
 
   return (
@@ -105,6 +164,16 @@ export default function Counter({
       <Text selectable={false} style={[styles.counterText, textRotationStyle, counterTextStyle]}>
         {lifeTotal}
       </Text>
+      {lifeChange !== 0 && (
+        <View style={[styles.lifeChangeLabelContainer, labelRotationStyle]}>
+          <Text
+            selectable={false}
+            style={[styles.lifeChangeLabel, textRotationStyle, lifeChangeLabelStyle]}>
+            {lifeChange > 0 && "+"}
+            {lifeChange}
+          </Text>
+        </View>
+      )}
       <View style={[styles.buttonsWrapper, buttonsRotationStyle]}>
         <Pressable
           style={[
@@ -125,7 +194,7 @@ export default function Counter({
               styles.counterButtonText,
               textRotationStyle,
               buttonTextStyle,
-              { paddingBottom: 20 },
+              { paddingLeft: 20 },
             ]}>
             +
           </Text>
@@ -149,7 +218,8 @@ export default function Counter({
               styles.counterButtonText,
               textRotationStyle,
               buttonTextStyle,
-              { paddingTop: 20 },
+
+              { paddingRight: 20 },
             ]}>
             -
           </Text>
@@ -167,6 +237,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexGrow: 1,
     borderRadius: 20,
+    position: "relative",
   },
   buttonsWrapper: {
     position: "absolute",
@@ -185,5 +256,13 @@ const styles = StyleSheet.create({
   },
   counterText: {
     color: "#fff",
+  },
+  lifeChangeLabel: {
+    color: palette.neutrals.white,
+  },
+  lifeChangeLabelContainer: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

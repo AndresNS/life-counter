@@ -30,7 +30,7 @@ export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps)
           lifeTotal={lifeTotals[players[0].playerId]}
           playerId={players[0].playerId}
           setLifeTotal={setLifeTotals}
-          rotation="90"
+          rotation="180"
           totalPlayers={totalPlayers}
         />
         <Counter
@@ -39,7 +39,7 @@ export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps)
           lifeTotal={lifeTotals[players[1].playerId]}
           playerId={players[1].playerId}
           setLifeTotal={setLifeTotals}
-          rotation="270"
+          rotation="0"
           totalPlayers={totalPlayers}
         />
       </View>
@@ -56,6 +56,7 @@ export default function ThreePlayersLayout({ players }: ThreePlayersLayoutProps)
           lifeTotal={lifeTotals[players[2].playerId]}
           playerId={players[2].playerId}
           setLifeTotal={setLifeTotals}
+          rotation="90"
           totalPlayers={totalPlayers}
         />
       </View>
