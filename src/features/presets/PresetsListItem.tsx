@@ -86,14 +86,14 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
           <Text style={styles.title}>{preset.name}</Text>
           <View style={styles.settings}>
             <View style={styles.settingItem}>
+              <FontAwesome name="users" color={palette.neutrals.white} size={25} />
+              <Text style={styles.settingItemLabel}>{preset.players.length}</Text>
+            </View>
+            <View style={styles.settingItem}>
               <FontAwesome name="heart" color={palette.neutrals.white} size={25} />
               <Text style={styles.settingItemLabel}>
                 {getStartingLifes(preset.players).join("/")}
               </Text>
-            </View>
-            <View style={styles.settingItem}>
-              <FontAwesome name="users" color={palette.neutrals.white} size={25} />
-              <Text style={styles.settingItemLabel}>{preset.players.length}</Text>
             </View>
           </View>
         </View>
