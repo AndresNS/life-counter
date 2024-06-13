@@ -26,7 +26,7 @@ export default function TwoPlayersLayout({ players }: TwoPlayersLayoutProps): JS
         lifeTotal={lifeTotals[players[0].playerId]}
         playerId={players[0].playerId}
         setLifeTotal={setLifeTotals}
-        rotation="180"
+        rotation="270"
         totalPlayers={2}
       />
       <View style={styles.divider}>
@@ -41,6 +41,7 @@ export default function TwoPlayersLayout({ players }: TwoPlayersLayoutProps): JS
         lifeTotal={lifeTotals[players[1].playerId]}
         playerId={players[1].playerId}
         setLifeTotal={setLifeTotals}
+        rotation="90"
         totalPlayers={2}
       />
     </View>

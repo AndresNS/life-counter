@@ -45,6 +45,16 @@ Versioning Example:
 
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Change the position of counter buttons from vertical to horizontal.
+
+### Added
+
+- Add life change label.
+
 ## [0.4.0] 2024/06/13
 
 ### Added
@@ -104,4 +114,4 @@ Versioning Example:
 ### Added
 
 - Implemented basic functionality for the life counter.
-- Users can now start the life counter with default values (2 players with 40 life each)
+- Users can now start the life counter with default values (2 players with 40 life each).
