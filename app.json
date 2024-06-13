@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "TCG Life Counter",
-    "slug": "tcg-life-counter",
+    "slug": "life-counter",
     "version": "0.4.0",
     "orientation": "portrait",
-    "scheme": "tcg-life-counter",
+    "scheme": "life-counter",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -26,7 +26,7 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.andresns.tcglifecounter"
+      "package": "com.andresns.lifecounter"
     },
     "web": {
       "favicon": "./src/assets/favicon.png",
