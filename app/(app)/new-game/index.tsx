@@ -1,46 +1,83 @@
 import Button from "@common/components/Button";
-import DefaultLayout from "@common/layouts/default";
-import { isUniformArray } from "@common/lib/helpers";
+import DefaultLayout from "@common/layouts/Default";
 import palette from "@constants/colors";
 import { Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
+import CustomLifeForm from "@features/new-game/CustomLifeForm";
+import DynamicPreview from "@features/new-game/counter-preview/DynamicPreview";
+import { useGameContext } from "@features/new-game/gameContext";
 import { usePresetsContext } from "@features/presets/presetsContext";
 import { Preset } from "@features/presets/types";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { Dialog, Portal, Button as ButtonRN, Checkbox } from "react-native-paper";
+import { Checkbox } from "react-native-paper";
 import uuid from "react-native-uuid";
 
 const startingLifeValues = [20, 40, 100];
 const totalPlayersValues = [2, 3, 4];
 
 export default function NewGame(): JSX.Element {
+  const { game, newGame, updatePlayers } = useGameContext();
   const { addPreset } = usePresetsContext();
   const [startingLifeIndex, setStartingLifeIndex] = useState(0);
   const [totalPlayersIndex, setTotalPlayersIndex] = useState(0);
   const [startingLife, setStartingLife] = useState("");
-  const [players, setPlayers] = useState<Player[]>([]);
   // const [timer, setTimer] = useState(false);
   const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [presetName, setPresetName] = useState("");
 
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [customLifeDialogVisible, setCustomLifeDialogVisible] = useState(false);
+
+  useEffect(() => {
+    const newPlayers = [{}, {}].map(
+      (_, index): Player => ({
+        playerId: (index + 1).toString(),
+        backgroundColor: palette.customs[(index + 1).toString() as keyof typeof palette.customs],
+        backgroundTheme: "default",
+        startingLife: 20,
+        lifeTotal: 20,
+      }),
+    );
+
+    console.log("players", newPlayers);
+    newGame({
+      players: newPlayers,
+    });
+  }, []);
 
   useEffect(() => {
     const newPlayers = new Array(totalPlayersValues[totalPlayersIndex]).fill({});
 
-    setPlayers(
+    updatePlayers(
       newPlayers.map(
-        (_, index): Player => ({
-          playerId: (index + 1).toString(),
-          backgroundColor: palette.customs[(index + 1).toString() as keyof typeof palette.customs],
-          startingLife: Number(startingLife),
-          lifeTotal: Number(startingLife),
-        }),
+        (player, index): Player =>
+          player.playerId
+            ? player
+            : {
+                playerId: (index + 1).toString(),
+                backgroundColor:
+                  palette.customs[(index + 1).toString() as keyof typeof palette.customs],
+                backgroundTheme: "default",
+                startingLife: Number(startingLife),
+                lifeTotal: Number(startingLife),
+              },
       ),
     );
-  }, [totalPlayersIndex, startingLife]);
+  }, [totalPlayersIndex]);
+
+  useEffect(() => {
+    if (startingLife !== "")
+      updatePlayers(
+        game.players.map(
+          (player): Player => ({
+            ...player,
+            startingLife: Number(startingLife),
+            lifeTotal: Number(startingLife),
+          }),
+        ),
+      );
+  }, [startingLife]);
 
   useEffect(() => {
     if (startingLifeIndex !== startingLifeValues.length)
@@ -51,25 +88,23 @@ export default function NewGame(): JSX.Element {
     const newPreset: Preset = {
       id: uuid.v4(),
       name: presetName,
-      players,
+      players: game.players,
     };
 
     if (saveAsPreset) addPreset(newPreset);
 
     router.replace({
       pathname: "/game",
-      params: { ...newPreset, players: JSON.stringify(players) },
     });
   };
 
-  const showDialog = () => setDialogVisible(true);
-  const closeDialog = () => setDialogVisible(false);
+  const showCustomLifeDialog = () => setCustomLifeDialogVisible(true);
 
   const handleCustomStartingLife = () => {
     setStartingLifeIndex(startingLifeValues.length);
     setStartingLife("");
 
-    showDialog();
+    showCustomLifeDialog();
   };
 
   return (
@@ -77,7 +112,7 @@ export default function NewGame(): JSX.Element {
       <View style={styles.container}>
         <View style={styles.settingsContainer}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}> Players </Text>
+            <Text style={styles.sectionTitle}>Players</Text>
             <View style={styles.sectionOptions}>
               {totalPlayersValues.map((totalPlayersValue, index) => (
                 <Pressable
@@ -95,7 +130,7 @@ export default function NewGame(): JSX.Element {
             </View>
           </View>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}> Starting Life </Text>
+            <Text style={styles.sectionTitle}>Starting Life</Text>
             <View style={styles.sectionOptions}>
               {[
                 ...startingLifeValues.map((startingLifeValue, index) => (
@@ -133,38 +168,10 @@ export default function NewGame(): JSX.Element {
                 </Pressable>,
               ]}
             </View>
-            <Portal>
-              <Dialog style={styles.dialog} visible={dialogVisible} onDismiss={closeDialog}>
-                <Dialog.Title style={styles.dialogTitle}>Custom Starting Life</Dialog.Title>
-                <Dialog.Content>
-                  <TextInput
-                    placeholder="Insert Starting Life"
-                    style={styles.textInput}
-                    value={startingLife}
-                    onChangeText={setStartingLife}
-                    keyboardType="numeric"
-                    autoFocus
-                  />
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <ButtonRN
-                    contentStyle={styles.dialogButton}
-                    mode="outlined"
-                    textColor={palette.neutrals.white}
-                    onPress={closeDialog}>
-                    Cancel
-                  </ButtonRN>
-                  <ButtonRN
-                    contentStyle={styles.dialogButton}
-                    mode="contained"
-                    buttonColor={palette.primary[500]}
-                    textColor={palette.neutrals.white}
-                    onPress={closeDialog}>
-                    Accept
-                  </ButtonRN>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Customization</Text>
+            <DynamicPreview players={game.players} />
           </View>
           {/*          
           <View style={styles.section}>
@@ -173,7 +180,6 @@ export default function NewGame(): JSX.Element {
               <Text style={styles.checkboxLabel}>Timer</Text>
             </View>
           </View>*/}
-          {/* <View style={styles.section}> */}
           <Checkbox.Item
             label="Save as preset"
             status={saveAsPreset ? "checked" : "unchecked"}
@@ -182,7 +188,6 @@ export default function NewGame(): JSX.Element {
             color={palette.primary[500]}
             labelStyle={styles.checkboxLabel}
           />
-          {/* </View> */}
           {saveAsPreset && (
             <View style={styles.presetNameInput}>
               <TextInput
@@ -195,6 +200,12 @@ export default function NewGame(): JSX.Element {
           )}
         </View>
         <Button text="Start Game" onPress={handleStartGamePress} style={styles.submitButton} />
+        <CustomLifeForm
+          startingLife={startingLife}
+          setStartingLife={setStartingLife}
+          visible={customLifeDialogVisible}
+          setVisible={setCustomLifeDialogVisible}
+        />
       </View>
     </DefaultLayout>
   );

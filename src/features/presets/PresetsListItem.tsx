@@ -2,6 +2,7 @@ import { isUniformArray } from "@common/lib/helpers";
 import palette from "@constants/colors";
 import { Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
+import { useGameContext } from "@features/new-game/gameContext";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -24,6 +25,7 @@ const getStartingLifes = (players: Player[]) => {
 
 export default function PresetListItem({ preset }: IPresetListItemProps): JSX.Element {
   const { editPreset, deletePreset } = usePresetsContext();
+  const { newGame } = useGameContext();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -33,9 +35,10 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
   );
 
   const handleItemPress = () => {
+    newGame({ players: preset.players });
+
     router.push({
       pathname: "/game",
-      params: { ...preset, players: JSON.stringify(preset.players) },
     });
   };
 
@@ -59,6 +62,7 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
       players: preset.players.map((player) => ({
         ...player,
         startingLife: Number(presetStartingLife),
+        lifeTotal: Number(presetStartingLife),
       })),
     };
 

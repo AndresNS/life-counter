@@ -1,16 +1,13 @@
+import { getBackgroundColor, getTextColor } from "@common/lib/helpers";
 import palette from "@constants/colors";
-import { LifeTotal } from "@constants/types";
-import { text } from "body-parser";
-import { argv0 } from "process";
+import { Player } from "@constants/types";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 interface ICounterProps {
-  backgroundColor?: string;
-  lifeTotal: number;
   rotation?: RotationKey;
-  playerId: string;
-  setLifeTotal: React.Dispatch<React.SetStateAction<LifeTotal>>;
+  player: Player;
+  setLifeTotal: (playerId: string, lifeTotal: number) => void;
   style?: ViewStyle;
   totalPlayers: number;
 }
@@ -31,10 +28,8 @@ const rotationValues = {
 } as const;
 
 export default function Counter({
-  backgroundColor,
-  lifeTotal,
   rotation = "0",
-  playerId,
+  player,
   setLifeTotal,
   style,
   totalPlayers = 2,
@@ -43,41 +38,35 @@ export default function Counter({
     increment: false,
     decrement: false,
   });
-  const [currentLifeTotal, setCurrentLifeTotal] = useState<number>(lifeTotal);
+  const [currentLifeTotal, setCurrentLifeTotal] = useState<number>(player.lifeTotal);
   const [lifeChange, setLifeChange] = useState<number>(0);
   const longPressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lifeChangeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    setLifeChange(lifeTotal - currentLifeTotal);
+    setLifeChange(player.lifeTotal - currentLifeTotal);
 
     if (!lifeChangeIntervalRef.current) {
       lifeChangeIntervalRef.current = setInterval(() => {
-        setCurrentLifeTotal(lifeTotal);
+        setCurrentLifeTotal(player.lifeTotal);
         setLifeChange(0);
       }, 2000);
     } else {
       clearInterval(lifeChangeIntervalRef.current);
       lifeChangeIntervalRef.current = setInterval(() => {
-        setCurrentLifeTotal(lifeTotal);
+        setCurrentLifeTotal(player.lifeTotal);
         setLifeChange(0);
       }, 2000);
     }
-  }, [lifeTotal]);
+  }, [player.lifeTotal]);
 
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        setLifeTotal((prevLifeTotal) => ({
-          ...prevLifeTotal,
-          [playerId]: prevLifeTotal[playerId] + step,
-        }));
+        setLifeTotal(player.playerId, player.lifeTotal + step);
         break;
       case CounterModes.Decrement:
-        setLifeTotal((prevLifeTotal) => ({
-          ...prevLifeTotal,
-          [playerId]: prevLifeTotal[playerId] - step,
-        }));
+        setLifeTotal(player.playerId, player.lifeTotal - step);
         break;
       default:
         console.log("Mode not supported");
@@ -103,7 +92,7 @@ export default function Counter({
 
   const containerStyle: ViewStyle = {
     ...styles.counterContainer,
-    backgroundColor: backgroundColor || palette.customs[1],
+    backgroundColor: getBackgroundColor(player),
   };
 
   const buttonsRotationStyle: ViewStyle = {
@@ -116,14 +105,17 @@ export default function Counter({
 
   const counterTextStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 140 : 100,
+    color: getTextColor(player),
   };
 
   const buttonTextStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 50 : 30,
+    color: getTextColor(player),
   };
 
   const lifeChangeLabelStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 30 : 20,
+    color: getTextColor(player),
   };
 
   const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
@@ -162,7 +154,7 @@ export default function Counter({
   return (
     <View style={[containerStyle, style]}>
       <Text selectable={false} style={[styles.counterText, textRotationStyle, counterTextStyle]}>
-        {lifeTotal}
+        {player.lifeTotal}
       </Text>
       {lifeChange !== 0 && (
         <View style={[styles.lifeChangeLabelContainer, labelRotationStyle]}>
@@ -254,9 +246,7 @@ const styles = StyleSheet.create({
   counterButtonText: {
     color: "#fff",
   },
-  counterText: {
-    color: "#fff",
-  },
+  counterText: {},
   lifeChangeLabel: {
     color: palette.neutrals.white,
   },
