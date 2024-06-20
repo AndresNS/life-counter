@@ -54,6 +54,7 @@ Versioning Example:
 ### Added
 
 - Add life change label.
+- Add feature to customize counter background color and theme in new game page.
 
 ## [0.4.0] 2024/06/13
 

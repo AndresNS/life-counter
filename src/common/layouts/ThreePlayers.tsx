@@ -1,44 +1,30 @@
 import palette from "@constants/colors";
-import { LifeTotal, Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import Counter from "@features/counter/Counter";
-import { useState } from "react";
+import { useGameContext } from "@features/new-game/gameContext";
 import { Pressable, StyleSheet, View } from "react-native";
 
-interface FourPlayersLayoutProps {
-  players: Player[];
-}
+const totalPlayers = 3;
 
-const totalPlayers = 4;
+export default function ThreePlayersLayout(): JSX.Element {
+  const { game, updateLifeTotal, restartGame } = useGameContext();
 
-export default function FourPlayersLayout({ players }: FourPlayersLayoutProps): JSX.Element {
-  const startingLifeTotals = players.reduce((accum: LifeTotal, player: Player) => {
-    accum[player.playerId] = player.startingLife;
-    return accum;
-  }, {});
-
-  const [lifeTotals, setLifeTotals] = useState<LifeTotal>(startingLifeTotals);
-
-  const handleResetPress = () => setLifeTotals(startingLifeTotals);
+  const handleResetPress = () => restartGame();
 
   return (
     <View style={styles.container}>
-      <View style={styles.counterContainer}>
+      <View style={styles.topCounters}>
         <Counter
           style={{ flex: 1 }}
-          backgroundColor={players[0].backgroundColor}
-          lifeTotal={lifeTotals[players[0].playerId]}
-          playerId={players[0].playerId}
-          setLifeTotal={setLifeTotals}
+          player={game.players[0]}
+          setLifeTotal={updateLifeTotal}
           rotation="180"
           totalPlayers={totalPlayers}
         />
         <Counter
           style={{ flex: 1 }}
-          backgroundColor={players[1].backgroundColor}
-          lifeTotal={lifeTotals[players[1].playerId]}
-          playerId={players[1].playerId}
-          setLifeTotal={setLifeTotals}
+          player={game.players[1]}
+          setLifeTotal={updateLifeTotal}
           rotation="0"
           totalPlayers={totalPlayers}
         />
@@ -50,21 +36,11 @@ export default function FourPlayersLayout({ players }: FourPlayersLayoutProps): 
           </Pressable>
         </View>
       </View>
-      <View style={styles.counterContainer}>
+      <View style={styles.bottomCounter}>
         <Counter
-          backgroundColor={players[2].backgroundColor}
-          lifeTotal={lifeTotals[players[2].playerId]}
-          playerId={players[2].playerId}
-          setLifeTotal={setLifeTotals}
-          rotation="180"
-          totalPlayers={totalPlayers}
-        />
-        <Counter
-          backgroundColor={players[3].backgroundColor}
-          lifeTotal={lifeTotals[players[3].playerId]}
-          playerId={players[3].playerId}
-          setLifeTotal={setLifeTotals}
-          rotation="0"
+          player={game.players[2]}
+          setLifeTotal={updateLifeTotal}
+          rotation="90"
           totalPlayers={totalPlayers}
         />
       </View>
@@ -81,12 +57,13 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 3,
   },
-  counterContainer: {
-    flex: 1,
+  topCounters: {
+    flex: 1.5,
     width: "100%",
     flexDirection: "row",
     gap: 5,
   },
+  bottomCounter: { flex: 1, width: "100%" },
   divider: {
     position: "relative",
     top: -25,

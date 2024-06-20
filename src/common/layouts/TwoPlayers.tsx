@@ -1,33 +1,23 @@
 import palette from "@constants/colors";
-import { LifeTotal, Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import Counter from "@features/counter/Counter";
-import { useState } from "react";
+import { useGameContext } from "@features/new-game/gameContext";
 import { Pressable, StyleSheet, View } from "react-native";
 
-interface TwoPlayersLayoutProps {
-  players: Player[];
-}
+const totalPlayers = 2;
 
-export default function TwoPlayersLayout({ players }: TwoPlayersLayoutProps): JSX.Element {
-  const startingLifeTotals = players.reduce((accum: LifeTotal, player: Player) => {
-    accum[player.playerId] = player.startingLife;
-    return accum;
-  }, {});
+export default function TwoPlayersLayout(): JSX.Element {
+  const { game, updateLifeTotal, restartGame } = useGameContext();
 
-  const [lifeTotals, setLifeTotals] = useState<LifeTotal>(startingLifeTotals);
-
-  const handleResetPress = () => setLifeTotals(startingLifeTotals);
+  const handleResetPress = () => restartGame();
 
   return (
     <View style={styles.container}>
       <Counter
-        backgroundColor={players[0].backgroundColor}
-        lifeTotal={lifeTotals[players[0].playerId]}
-        playerId={players[0].playerId}
-        setLifeTotal={setLifeTotals}
+        player={game.players[0]}
+        setLifeTotal={updateLifeTotal}
         rotation="270"
-        totalPlayers={2}
+        totalPlayers={totalPlayers}
       />
       <View style={styles.divider}>
         <View style={styles.buttonContainer}>
@@ -37,12 +27,10 @@ export default function TwoPlayersLayout({ players }: TwoPlayersLayoutProps): JS
         </View>
       </View>
       <Counter
-        backgroundColor={players[1].backgroundColor}
-        lifeTotal={lifeTotals[players[1].playerId]}
-        playerId={players[1].playerId}
-        setLifeTotal={setLifeTotals}
+        player={game.players[1]}
+        setLifeTotal={updateLifeTotal}
         rotation="90"
-        totalPlayers={2}
+        totalPlayers={totalPlayers}
       />
     </View>
   );
