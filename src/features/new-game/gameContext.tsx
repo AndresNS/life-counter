@@ -11,6 +11,7 @@ type GameState = {
   restartGame: () => void;
   updatePlayers: (players: Player[]) => void;
   updateLifeTotal: (playerId: string, newLifeTotal: number) => void;
+  updateStartingLife: (playerId: string, newLifeTotal: number) => void;
   updateTheme: (playerId: string, newTheme: BackgroundTheme) => void;
   updateBackgroundColor: (playerId: string, backgroundColor: string) => void;
 };
@@ -23,6 +24,7 @@ const defaultState: GameState = {
   restartGame: () => {},
   updatePlayers: () => {},
   updateLifeTotal: () => {},
+  updateStartingLife: () => {},
   updateTheme: () => {},
   updateBackgroundColor: () => {},
 };
@@ -59,6 +61,15 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }));
   };
 
+  const updateStartingLife = (playerId: string, newLifeTotal: number) => {
+    setGame((prevGameState) => ({
+      ...prevGameState,
+      players: prevGameState.players.map((player) =>
+        player.playerId === playerId ? { ...player, startingLife: newLifeTotal } : player,
+      ),
+    }));
+  };
+
   const updateBackgroundColor = (playerId: string, backgroundColor: string) => {
     setGame((prevGameState) => ({
       ...prevGameState,
@@ -85,6 +96,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         restartGame,
         updatePlayers,
         updateLifeTotal,
+        updateStartingLife,
         updateTheme,
         updateBackgroundColor,
       }}>

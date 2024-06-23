@@ -3,19 +3,32 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { Dialog, Portal, Button } from "react-native-paper";
 
-type CustomLifeFormProps = {
-  customLife: string;
-  setCustomLife: Dispatch<SetStateAction<string>>;
-  visible: boolean;
-  setVisible: (value: boolean) => void;
-};
+import { useGameContext } from "./gameContext";
+
+type CustomLifeFormProps =
+  | {
+      customLife: string;
+      playerId: string;
+      visible: boolean;
+      setVisible: (value: boolean) => void;
+      setCustomLife?: never;
+    }
+  | {
+      customLife: string;
+      setCustomLife: Dispatch<SetStateAction<string>>;
+      visible: boolean;
+      setVisible: (value: boolean) => void;
+      playerId?: never;
+    };
 
 export default function CustomLifeForm({
   customLife,
-  setCustomLife,
+  playerId,
   visible,
   setVisible,
+  setCustomLife,
 }: CustomLifeFormProps) {
+  const { updateStartingLife } = useGameContext();
   const [inputValue, setInputValue] = useState(customLife);
 
   useEffect(() => {
@@ -27,7 +40,11 @@ export default function CustomLifeForm({
   };
 
   const handleSubmit = () => {
-    if (inputValue !== "") setCustomLife(inputValue);
+    if (inputValue !== "") {
+      if (setCustomLife) setCustomLife(inputValue);
+
+      if (playerId) updateStartingLife(playerId, Number(inputValue));
+    }
     closeDialog();
   };
 
