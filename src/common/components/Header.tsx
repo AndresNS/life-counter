@@ -16,7 +16,7 @@ export default function Header({ title }: HeaderProps): JSX.Element {
     <View style={styles.container}>
       <View style={styles.navigation}>
         {!isHomePage() && (
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}>
             <FontAwesome name="chevron-left" color={palette.neutrals.white} size={20} />
           </Pressable>
         )}
