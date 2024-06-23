@@ -80,7 +80,8 @@ export default function CustomLifeForm({
             mode="contained"
             buttonColor={palette.primary[500]}
             textColor={palette.neutrals.white}
-            onPress={handleSubmit}>
+            onPress={handleSubmit}
+            disabled={inputValue === ""}>
             Accept
           </Button>
         </Dialog.Actions>
