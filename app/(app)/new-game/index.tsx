@@ -40,7 +40,6 @@ export default function NewGame(): JSX.Element {
       }),
     );
 
-    console.log("players", newPlayers);
     newGame({
       players: newPlayers,
     });
@@ -98,13 +97,10 @@ export default function NewGame(): JSX.Element {
     });
   };
 
-  const showCustomLifeDialog = () => setCustomLifeDialogVisible(true);
-
   const handleCustomStartingLife = () => {
     setStartingLifeIndex(startingLifeValues.length);
-    setStartingLife("");
 
-    showCustomLifeDialog();
+    setCustomLifeDialogVisible(true);
   };
 
   return (
@@ -160,6 +156,7 @@ export default function NewGame(): JSX.Element {
                       <Text style={styles.optionText} selectable={false}>
                         {startingLife}
                       </Text>
+
                       <FontAwesome name="pencil" size={16} color={palette.neutrals.white} />
                     </View>
                   ) : (
@@ -201,8 +198,8 @@ export default function NewGame(): JSX.Element {
         </View>
         <Button text="Start Game" onPress={handleStartGamePress} style={styles.submitButton} />
         <CustomLifeForm
-          startingLife={startingLife}
-          setStartingLife={setStartingLife}
+          customLife={startingLife}
+          setCustomLife={setStartingLife}
           visible={customLifeDialogVisible}
           setVisible={setCustomLifeDialogVisible}
         />

@@ -1,33 +1,51 @@
 import palette from "@constants/colors";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { Dialog, Portal, Button } from "react-native-paper";
 
 type CustomLifeFormProps = {
-  startingLife: string;
-  setStartingLife: Dispatch<SetStateAction<string>>;
+  customLife: string;
+  setCustomLife: Dispatch<SetStateAction<string>>;
   visible: boolean;
   setVisible: (value: boolean) => void;
 };
 
 export default function CustomLifeForm({
-  startingLife,
-  setStartingLife,
+  customLife,
+  setCustomLife,
   visible,
   setVisible,
 }: CustomLifeFormProps) {
-  const closeDialog = () => setVisible(false);
+  const [inputValue, setInputValue] = useState(customLife);
+
+  useEffect(() => {
+    setInputValue(customLife);
+  }, [customLife]);
+
+  const closeDialog = () => {
+    setVisible(false);
+  };
+
+  const handleSubmit = () => {
+    if (inputValue !== "") setCustomLife(inputValue);
+    closeDialog();
+  };
+
+  const handleCancel = () => {
+    setInputValue(customLife);
+    closeDialog();
+  };
 
   return (
     <Portal>
-      <Dialog style={styles.dialog} visible={visible} onDismiss={closeDialog}>
+      <Dialog style={styles.dialog} visible={visible} onDismiss={handleCancel}>
         <Dialog.Title style={styles.dialogTitle}>Custom Starting Life</Dialog.Title>
         <Dialog.Content>
           <TextInput
             placeholder="Insert Starting Life"
             style={styles.textInput}
-            value={startingLife}
-            onChangeText={setStartingLife}
+            value={inputValue}
+            onChangeText={setInputValue}
             keyboardType="numeric"
             autoFocus
           />
@@ -37,7 +55,7 @@ export default function CustomLifeForm({
             contentStyle={styles.dialogButton}
             mode="outlined"
             textColor={palette.neutrals.white}
-            onPress={closeDialog}>
+            onPress={handleCancel}>
             Cancel
           </Button>
           <Button
@@ -45,7 +63,7 @@ export default function CustomLifeForm({
             mode="contained"
             buttonColor={palette.primary[500]}
             textColor={palette.neutrals.white}
-            onPress={closeDialog}>
+            onPress={handleSubmit}>
             Accept
           </Button>
         </Dialog.Actions>
