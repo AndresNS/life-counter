@@ -8,6 +8,7 @@ export type Game = {
 type GameState = {
   game: Game;
   newGame: (game: Game) => void;
+  clearGame: () => void;
   restartGame: () => void;
   updatePlayers: (players: Player[]) => void;
   updateLifeTotal: (playerId: string, newLifeTotal: number) => void;
@@ -21,6 +22,7 @@ const defaultState: GameState = {
     players: [],
   },
   newGame: () => {},
+  clearGame: () => {},
   restartGame: () => {},
   updatePlayers: () => {},
   updateLifeTotal: () => {},
@@ -36,6 +38,10 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   const newGame = (game: Game) => {
     setGame(game);
+  };
+
+  const clearGame = () => {
+    if (game && game.players.length > 0) setGame(defaultState.game);
   };
 
   const restartGame = () => {
@@ -93,6 +99,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       value={{
         game,
         newGame,
+        clearGame,
         restartGame,
         updatePlayers,
         updateLifeTotal,
