@@ -46,23 +46,25 @@ export default function NewGame(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    if (startingLife === "") return;
+
     const newPlayers = new Array(totalPlayersValues[totalPlayersIndex]).fill({});
 
-    updatePlayers(
-      newPlayers.map(
-        (player, index): Player =>
-          player.playerId
-            ? player
-            : {
-                playerId: (index + 1).toString(),
-                backgroundColor:
-                  palette.customs[(index + 1).toString() as keyof typeof palette.customs],
-                backgroundTheme: "default",
-                startingLife: Number(startingLife),
-                lifeTotal: Number(startingLife),
-              },
-      ),
+    const updatedPlayers = newPlayers.map(
+      (player, index): Player =>
+        player.playerId
+          ? player
+          : {
+              playerId: (index + 1).toString(),
+              backgroundColor:
+                palette.customs[(index + 1).toString() as keyof typeof palette.customs],
+              backgroundTheme: "default",
+              startingLife: Number(startingLife),
+              lifeTotal: Number(startingLife),
+            },
     );
+
+    updatePlayers(updatedPlayers);
   }, [totalPlayersIndex]);
 
   useEffect(() => {
