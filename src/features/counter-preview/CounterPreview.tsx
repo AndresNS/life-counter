@@ -5,8 +5,8 @@ import { useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 import ColorPicker from "./ColorPicker";
-import CustomLifeForm from "../CustomLifeForm";
-import { useGameContext } from "../gameContext";
+import CustomLifeForm from "../new-game/CustomLifeForm";
+import { useGameContext } from "../new-game/gameContext";
 
 type CounterPreviewProps = {
   player: Player;

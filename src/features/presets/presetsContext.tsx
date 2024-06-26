@@ -7,6 +7,7 @@ type PresetsState = {
   presets: Preset[];
   addPreset: (preset: Preset) => Promise<void>;
   editPreset: (updatedPreset: Preset) => Promise<void>;
+  getPreset: (presetId: string | number[]) => Preset;
   deletePreset: (presetId: string | number[]) => Promise<void>;
 };
 
@@ -14,6 +15,7 @@ const defaultState: PresetsState = {
   presets: [],
   addPreset: async () => {},
   editPreset: async () => {},
+  getPreset: () => ({ id: "", name: "", players: [] }),
   deletePreset: async () => {},
 };
 
@@ -52,6 +54,14 @@ export const PresetsContextProvider: React.FC<{ children: ReactNode }> = ({ chil
     setPresets(updatedPresets || []);
   };
 
+  const getPreset = (presetId: string | number[]) => {
+    const preset = presets.find((preset) => preset.id === presetId);
+
+    if (!preset) throw new Error(`Preset with id:${presetId} not found`);
+
+    return preset;
+  };
+
   const deletePreset = async (presetId: string | number[]) => {
     const presets = await storage.fetch<Preset[]>("presets");
     const updatedPresets = presets?.filter((preset) => preset.id !== presetId);
@@ -61,7 +71,7 @@ export const PresetsContextProvider: React.FC<{ children: ReactNode }> = ({ chil
   };
 
   return (
-    <PresetsContext.Provider value={{ presets, addPreset, editPreset, deletePreset }}>
+    <PresetsContext.Provider value={{ presets, addPreset, editPreset, getPreset, deletePreset }}>
       {children}
     </PresetsContext.Provider>
   );

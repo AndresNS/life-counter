@@ -11,7 +11,7 @@ type GameState = {
   clearGame: () => void;
   restartGame: () => void;
   updatePlayers: (players: Player[]) => void;
-  updateLifeTotal: (playerId: string, newLifeTotal: number) => void;
+  updatePlayerLifeTotal: (playerId: string, newLifeTotal: number) => void;
   updateStartingLife: (playerId: string, newLifeTotal: number) => void;
   updateTheme: (playerId: string, newTheme: BackgroundTheme) => void;
   updateBackgroundColor: (playerId: string, backgroundColor: string) => void;
@@ -25,7 +25,7 @@ const defaultState: GameState = {
   clearGame: () => {},
   restartGame: () => {},
   updatePlayers: () => {},
-  updateLifeTotal: () => {},
+  updatePlayerLifeTotal: () => {},
   updateStartingLife: () => {},
   updateTheme: () => {},
   updateBackgroundColor: () => {},
@@ -41,7 +41,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const clearGame = () => {
-    if (game && game.players.length > 0) setGame(defaultState.game);
+    setGame(defaultState.game);
   };
 
   const restartGame = () => {
@@ -58,7 +58,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
   };
 
-  const updateLifeTotal = (playerId: string, newLifeTotal: number) => {
+  const updatePlayerLifeTotal = (playerId: string, newLifeTotal: number) => {
     setGame((prevGameState) => ({
       ...prevGameState,
       players: prevGameState.players.map((player) =>
@@ -71,7 +71,9 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setGame((prevGameState) => ({
       ...prevGameState,
       players: prevGameState.players.map((player) =>
-        player.playerId === playerId ? { ...player, startingLife: newLifeTotal } : player,
+        player.playerId === playerId
+          ? { ...player, startingLife: newLifeTotal, lifeTotal: newLifeTotal }
+          : player,
       ),
     }));
   };
@@ -102,7 +104,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         clearGame,
         restartGame,
         updatePlayers,
-        updateLifeTotal,
+        updatePlayerLifeTotal,
         updateStartingLife,
         updateTheme,
         updateBackgroundColor,

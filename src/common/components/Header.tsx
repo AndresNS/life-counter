@@ -1,7 +1,6 @@
 import palette from "@constants/colors";
-import { FontAwesome } from "@expo/vector-icons";
-import { router, usePathname } from "expo-router";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { usePathname } from "expo-router";
+import { Text, View, StyleSheet } from "react-native";
 
 interface HeaderProps {
   title: string;
@@ -14,27 +13,27 @@ export default function Header({ title }: HeaderProps): JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.navigation}>
-        {!isHomePage() && (
-          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}>
-            <FontAwesome name="chevron-left" color={palette.neutrals.white} size={20} />
-          </Pressable>
-        )}
-      </View>
+      {/* <View style={styles.navigation}> */}
+      {/*   {!isHomePage() && ( */}
+      {/*     <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}> */}
+      {/*       <FontAwesome name="chevron-left" color={palette.neutrals.white} size={20} /> */}
+      {/*     </Pressable> */}
+      {/*   )} */}
+      {/* </View> */}
       <View style={styles.logoContainer}>
         <Text style={styles.logo}>{title}</Text>
         {isHomePage() && <Text style={styles.version}>{process.env.EXPO_PUBLIC_APP_VERSION}</Text>}
       </View>
-      <View style={styles.menu}>
-        {/*        <FontAwesome name="bars" color={palette.neutrals.white} size={20} />*/}
-      </View>
+      {/* <View style={styles.menu}> */}
+      {/*   {/*        <FontAwesome name="bars" color={palette.neutrals.white} size={20} />*/}
+      {/* </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "space-between",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: palette.grays[900],
