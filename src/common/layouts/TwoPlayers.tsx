@@ -7,7 +7,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 const totalPlayers = 2;
 
 export default function TwoPlayersLayout(): JSX.Element {
-  const { game, updateLifeTotal, restartGame } = useGameContext();
+  const { game, updatePlayerLifeTotal, restartGame } = useGameContext();
 
   const handleResetPress = () => restartGame();
 
@@ -15,7 +15,7 @@ export default function TwoPlayersLayout(): JSX.Element {
     <View style={styles.container}>
       <Counter
         player={game.players[0]}
-        setLifeTotal={updateLifeTotal}
+        setLifeTotal={updatePlayerLifeTotal}
         rotation="270"
         totalPlayers={totalPlayers}
       />
@@ -28,7 +28,7 @@ export default function TwoPlayersLayout(): JSX.Element {
       </View>
       <Counter
         player={game.players[1]}
-        setLifeTotal={updateLifeTotal}
+        setLifeTotal={updatePlayerLifeTotal}
         rotation="90"
         totalPlayers={totalPlayers}
       />

@@ -1,33 +1,68 @@
 import palette from "@constants/colors";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { Dialog, Portal, Button } from "react-native-paper";
 
-type CustomLifeFormProps = {
-  startingLife: string;
-  setStartingLife: Dispatch<SetStateAction<string>>;
-  visible: boolean;
-  setVisible: (value: boolean) => void;
-};
+import { useGameContext } from "./gameContext";
+
+type CustomLifeFormProps =
+  | {
+      customLife: string;
+      playerId: string;
+      visible: boolean;
+      setVisible: (value: boolean) => void;
+      setCustomLife?: never;
+    }
+  | {
+      customLife: string;
+      setCustomLife: Dispatch<SetStateAction<string>>;
+      visible: boolean;
+      setVisible: (value: boolean) => void;
+      playerId?: never;
+    };
 
 export default function CustomLifeForm({
-  startingLife,
-  setStartingLife,
+  customLife,
+  playerId,
   visible,
   setVisible,
+  setCustomLife,
 }: CustomLifeFormProps) {
-  const closeDialog = () => setVisible(false);
+  const { updateStartingLife } = useGameContext();
+  const [inputValue, setInputValue] = useState(customLife);
+
+  useEffect(() => {
+    setInputValue(customLife);
+  }, [customLife]);
+
+  const closeDialog = () => {
+    setVisible(false);
+  };
+
+  const handleSubmit = () => {
+    if (inputValue !== "") {
+      if (setCustomLife) setCustomLife(inputValue);
+
+      if (playerId) updateStartingLife(playerId, Number(inputValue));
+    }
+    closeDialog();
+  };
+
+  const handleCancel = () => {
+    setInputValue(customLife);
+    closeDialog();
+  };
 
   return (
     <Portal>
-      <Dialog style={styles.dialog} visible={visible} onDismiss={closeDialog}>
+      <Dialog style={styles.dialog} visible={visible} onDismiss={handleCancel}>
         <Dialog.Title style={styles.dialogTitle}>Custom Starting Life</Dialog.Title>
         <Dialog.Content>
           <TextInput
             placeholder="Insert Starting Life"
             style={styles.textInput}
-            value={startingLife}
-            onChangeText={setStartingLife}
+            value={inputValue}
+            onChangeText={setInputValue}
             keyboardType="numeric"
             autoFocus
           />
@@ -37,7 +72,7 @@ export default function CustomLifeForm({
             contentStyle={styles.dialogButton}
             mode="outlined"
             textColor={palette.neutrals.white}
-            onPress={closeDialog}>
+            onPress={handleCancel}>
             Cancel
           </Button>
           <Button
@@ -45,7 +80,8 @@ export default function CustomLifeForm({
             mode="contained"
             buttonColor={palette.primary[500]}
             textColor={palette.neutrals.white}
-            onPress={closeDialog}>
+            onPress={handleSubmit}
+            disabled={inputValue === ""}>
             Accept
           </Button>
         </Dialog.Actions>

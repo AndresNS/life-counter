@@ -5,8 +5,8 @@ import { useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 import ColorPicker from "./ColorPicker";
-// import CustomLifeForm from "../CustomLifeForm";
-import { useGameContext } from "../gameContext";
+import CustomLifeForm from "../new-game/CustomLifeForm";
+import { useGameContext } from "../new-game/gameContext";
 
 type CounterPreviewProps = {
   player: Player;
@@ -15,6 +15,7 @@ type CounterPreviewProps = {
 export default function CounterPreview({ player }: CounterPreviewProps): JSX.Element {
   const { updateTheme, updateBackgroundColor } = useGameContext();
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [customLifeDialogVisible, setCustomLifeDialogVisible] = useState(false);
 
   const containerStyle: ViewStyle = {
     backgroundColor: getBackgroundColor(player),
@@ -32,14 +33,14 @@ export default function CounterPreview({ player }: CounterPreviewProps): JSX.Ele
         </Text>
       </Pressable>
       <View style={styles.buttonsContainer}>
-        {/* <Pressable style={styles.button}> */}
-        {/*   <FontAwesome */}
-        {/*     style={styles.buttonIcon} */}
-        {/*     name="heart" */}
-        {/*     color={getTextColor(player)} */}
-        {/*     size={20} */}
-        {/*   /> */}
-        {/* </Pressable> */}
+        <Pressable style={styles.button} onPress={() => setCustomLifeDialogVisible(true)}>
+          <FontAwesome
+            style={styles.buttonIcon}
+            name="heart"
+            color={getTextColor(player)}
+            size={20}
+          />
+        </Pressable>
         <Pressable style={styles.button} onPress={() => setColorPickerVisible(true)}>
           <FontAwesome
             style={styles.buttonIcon}
@@ -49,7 +50,12 @@ export default function CounterPreview({ player }: CounterPreviewProps): JSX.Ele
           />
         </Pressable>
       </View>
-      {/* <CustomLifeForm /> */}
+      <CustomLifeForm
+        customLife={player.startingLife.toString()}
+        playerId={player.playerId}
+        visible={customLifeDialogVisible}
+        setVisible={setCustomLifeDialogVisible}
+      />
       <ColorPicker
         player={player}
         visible={colorPickerVisible}

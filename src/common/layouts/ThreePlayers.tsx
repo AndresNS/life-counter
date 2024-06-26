@@ -7,7 +7,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 const totalPlayers = 3;
 
 export default function ThreePlayersLayout(): JSX.Element {
-  const { game, updateLifeTotal, restartGame } = useGameContext();
+  const { game, updatePlayerLifeTotal, restartGame } = useGameContext();
 
   const handleResetPress = () => restartGame();
 
@@ -17,14 +17,14 @@ export default function ThreePlayersLayout(): JSX.Element {
         <Counter
           style={{ flex: 1 }}
           player={game.players[0]}
-          setLifeTotal={updateLifeTotal}
+          setLifeTotal={updatePlayerLifeTotal}
           rotation="180"
           totalPlayers={totalPlayers}
         />
         <Counter
           style={{ flex: 1 }}
           player={game.players[1]}
-          setLifeTotal={updateLifeTotal}
+          setLifeTotal={updatePlayerLifeTotal}
           rotation="0"
           totalPlayers={totalPlayers}
         />
@@ -39,7 +39,7 @@ export default function ThreePlayersLayout(): JSX.Element {
       <View style={styles.bottomCounter}>
         <Counter
           player={game.players[2]}
-          setLifeTotal={updateLifeTotal}
+          setLifeTotal={updatePlayerLifeTotal}
           rotation="90"
           totalPlayers={totalPlayers}
         />
