@@ -3,6 +3,7 @@ import { ReactNode, createContext, useContext, useState } from "react";
 
 export type Game = {
   players: Player[];
+  presetId?: string | number[];
 };
 
 type GameState = {
@@ -15,6 +16,7 @@ type GameState = {
   updateStartingLife: (playerId: string, newLifeTotal: number) => void;
   updateTheme: (playerId: string, newTheme: BackgroundTheme) => void;
   updateBackgroundColor: (playerId: string, backgroundColor: string) => void;
+  updatePresetId: (presetId: string | number[]) => void;
 };
 
 const defaultState: GameState = {
@@ -29,6 +31,7 @@ const defaultState: GameState = {
   updateStartingLife: () => {},
   updateTheme: () => {},
   updateBackgroundColor: () => {},
+  updatePresetId: () => {},
 };
 
 export const GameContext = createContext<GameState>(defaultState);
@@ -96,6 +99,13 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }));
   };
 
+  const updatePresetId = (presetId: string | number[]) => {
+    setGame((prevGameState) => ({
+      ...prevGameState,
+      presetId,
+    }));
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -108,6 +118,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         updateStartingLife,
         updateTheme,
         updateBackgroundColor,
+        updatePresetId,
       }}>
       {children}
     </GameContext.Provider>

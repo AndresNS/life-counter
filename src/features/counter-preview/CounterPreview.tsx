@@ -10,9 +10,13 @@ import { useGameContext } from "../new-game/gameContext";
 
 type CounterPreviewProps = {
   player: Player;
+  showStartingLifes: boolean;
 };
 
-export default function CounterPreview({ player }: CounterPreviewProps): JSX.Element {
+export default function CounterPreview({
+  player,
+  showStartingLifes = true,
+}: CounterPreviewProps): JSX.Element {
   const { updateTheme, updateBackgroundColor } = useGameContext();
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [customLifeDialogVisible, setCustomLifeDialogVisible] = useState(false);
@@ -33,14 +37,16 @@ export default function CounterPreview({ player }: CounterPreviewProps): JSX.Ele
         </Text>
       </Pressable>
       <View style={styles.buttonsContainer}>
-        <Pressable style={styles.button} onPress={() => setCustomLifeDialogVisible(true)}>
-          <FontAwesome
-            style={styles.buttonIcon}
-            name="heart"
-            color={getTextColor(player)}
-            size={20}
-          />
-        </Pressable>
+        {showStartingLifes && (
+          <Pressable style={styles.button} onPress={() => setCustomLifeDialogVisible(true)}>
+            <FontAwesome
+              style={styles.buttonIcon}
+              name="heart"
+              color={getTextColor(player)}
+              size={20}
+            />
+          </Pressable>
+        )}
         <Pressable style={styles.button} onPress={() => setColorPickerVisible(true)}>
           <FontAwesome
             style={styles.buttonIcon}

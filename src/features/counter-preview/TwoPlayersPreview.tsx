@@ -6,13 +6,17 @@ import CounterPreview from "./CounterPreview";
 
 interface TwoPlayersPreviewProps {
   players: Player[];
+  showStartingLifes: boolean;
 }
 
-export default function TwoPlayersPreview({ players }: TwoPlayersPreviewProps): JSX.Element {
+export default function TwoPlayersPreview({
+  players,
+  showStartingLifes,
+}: TwoPlayersPreviewProps): JSX.Element {
   return (
     <View style={styles.container}>
-      <CounterPreview player={players[0]} />
-      <CounterPreview player={players[1]} />
+      <CounterPreview player={players[0]} showStartingLifes={showStartingLifes} />
+      <CounterPreview player={players[1]} showStartingLifes={showStartingLifes} />
     </View>
   );
 }

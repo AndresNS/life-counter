@@ -12,10 +12,11 @@ const LayoutComponentMap: { [key: number]: React.FC<any> } = {
 
 type DynamicPreviewProps = {
   players: Player[];
+  showStartingLifes?: boolean;
 };
 
-export default function DynamicPreview({ players }: DynamicPreviewProps) {
+export default function DynamicPreview({ players, showStartingLifes }: DynamicPreviewProps) {
   const Component = LayoutComponentMap[players.length];
 
-  return Component ? <Component players={players} /> : null;
+  return Component ? <Component players={players} showStartingLifes={showStartingLifes} /> : null;
 }

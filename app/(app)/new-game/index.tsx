@@ -18,7 +18,7 @@ const startingLifeValues = [20, 40, 100];
 const totalPlayersValues = [2, 3, 4];
 
 export default function NewGame(): JSX.Element {
-  const { game, newGame, clearGame, updatePlayers } = useGameContext();
+  const { game, newGame, clearGame, updatePlayers, updatePresetId } = useGameContext();
   const { addPreset } = usePresetsContext();
   const [startingLifeIndex, setStartingLifeIndex] = useState(0);
   const [totalPlayersIndex, setTotalPlayersIndex] = useState(0);
@@ -86,14 +86,17 @@ export default function NewGame(): JSX.Element {
   }, [startingLifeIndex]);
 
   const handleStartGamePress = async () => {
-    const newPreset: Preset = {
-      id: uuid.v4(),
-      name: presetName,
-      players: game.players,
-    };
+    if (saveAsPreset) {
+      const newPreset: Preset = {
+        id: uuid.v4(),
+        name: presetName,
+        players: game.players,
+      };
 
-    if (saveAsPreset) addPreset(newPreset);
+      addPreset(newPreset);
 
+      updatePresetId(newPreset.id);
+    }
     router.replace({
       pathname: "/game",
     });

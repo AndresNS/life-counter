@@ -30,7 +30,7 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
   const handleItemPress = () => {
-    newGame({ players: preset.players });
+    newGame({ players: preset.players, presetId: preset.id });
 
     router.push({
       pathname: "/game",
