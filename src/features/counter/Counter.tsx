@@ -1,13 +1,13 @@
 import { getBackgroundColor, getTextColor } from "@common/lib/helpers";
 import palette from "@constants/colors";
 import { Player } from "@constants/types";
-import { useEffect, useRef, useState } from "react";
+import { useGameContext } from "@features/new-game/gameContext";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 interface ICounterProps {
   rotation?: RotationKey;
   player: Player;
-  setLifeTotal: (playerId: string, lifeTotal: number) => void;
   style?: ViewStyle;
   totalPlayers: number;
 }
@@ -27,46 +27,78 @@ const rotationValues = {
   "270": "row",
 } as const;
 
+const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
+  switch (rotation) {
+    case "0":
+      return {
+        left: 0,
+        height: "100%",
+        width: "50%",
+      };
+    case "90":
+      return {
+        top: 0,
+        height: "50%",
+        width: "100%",
+      };
+    case "180":
+      return {
+        right: 0,
+        width: "50%",
+        height: "100%",
+      };
+    case "270":
+      return {
+        bottom: 0,
+        height: "50%",
+        width: "100%",
+      };
+  }
+};
+
 export default function Counter({
   rotation = "0",
   player,
-  setLifeTotal,
   style,
   totalPlayers = 2,
 }: ICounterProps): JSX.Element {
+  const { updatePlayerLifeTotal } = useGameContext();
   const [isPressed, setIsPressed] = useState({
     increment: false,
     decrement: false,
   });
-  const [currentLifeTotal, setCurrentLifeTotal] = useState<number>(player.lifeTotal);
   const [lifeChange, setLifeChange] = useState<number>(0);
+  const currentLifeTotal = useRef<number>(player.lifeTotal);
+  const previousLifeTotal = useRef<number>(player.lifeTotal);
   const longPressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lifeChangeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    setLifeChange(player.lifeTotal - currentLifeTotal);
+    setLifeChange(player.lifeTotal - previousLifeTotal.current);
 
-    if (!lifeChangeIntervalRef.current) {
-      lifeChangeIntervalRef.current = setInterval(() => {
-        setCurrentLifeTotal(player.lifeTotal);
-        setLifeChange(0);
-      }, 2000);
-    } else {
-      clearInterval(lifeChangeIntervalRef.current);
-      lifeChangeIntervalRef.current = setInterval(() => {
-        setCurrentLifeTotal(player.lifeTotal);
-        setLifeChange(0);
-      }, 2000);
-    }
+    if (lifeChangeIntervalRef.current) clearInterval(lifeChangeIntervalRef.current);
+
+    lifeChangeIntervalRef.current = setInterval(() => {
+      previousLifeTotal.current = currentLifeTotal.current;
+      setLifeChange(0);
+    }, 2000);
+
+    currentLifeTotal.current = player.lifeTotal;
+
+    return () => {
+      if (lifeChangeIntervalRef.current) clearInterval(lifeChangeIntervalRef.current);
+    };
   }, [player.lifeTotal]);
 
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        setLifeTotal(player.playerId, player.lifeTotal + step);
+        currentLifeTotal.current += step;
+        updatePlayerLifeTotal(player.playerId, currentLifeTotal.current);
         break;
       case CounterModes.Decrement:
-        setLifeTotal(player.playerId, player.lifeTotal - step);
+        currentLifeTotal.current -= step;
+        updatePlayerLifeTotal(player.playerId, currentLifeTotal.current);
         break;
       default:
         console.log("Mode not supported");
@@ -74,21 +106,27 @@ export default function Counter({
   };
 
   const handlePressIn = (mode: string): void => {
-    setIsPressed({ ...isPressed, [mode]: true });
+    setIsPressed((prev) => ({ ...prev, [mode]: true }));
   };
 
   const handlePressOut = (mode: string): void => {
     if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
-    setIsPressed({ ...isPressed, [mode]: false });
+    setIsPressed((prev) => ({ ...prev, [mode]: false }));
   };
 
-  const handleLongPress = (mode: string): void => {
-    updateCounter(mode, longPressStep);
-
-    longPressIntervalRef.current = setInterval(() => {
+  const handleLongPress = useCallback(
+    (mode: string): void => {
       updateCounter(mode, longPressStep);
-    }, 700);
-  };
+
+      if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
+
+      longPressIntervalRef.current = setInterval(() => {
+        console.log("tick");
+        updateCounter(mode, longPressStep);
+      }, 700);
+    },
+    [updateCounter],
+  );
 
   const containerStyle: ViewStyle = {
     ...styles.counterContainer,
@@ -116,35 +154,6 @@ export default function Counter({
   const lifeChangeLabelStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 30 : 20,
     color: getTextColor(player),
-  };
-
-  const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
-    switch (rotation) {
-      case "0":
-        return {
-          left: 0,
-          height: "100%",
-          width: "50%",
-        };
-      case "90":
-        return {
-          top: 0,
-          height: "50%",
-          width: "100%",
-        };
-      case "180":
-        return {
-          right: 0,
-          width: "50%",
-          height: "100%",
-        };
-      case "270":
-        return {
-          bottom: 0,
-          height: "50%",
-          width: "100%",
-        };
-    }
   };
 
   const labelRotationStyle: ViewStyle = {

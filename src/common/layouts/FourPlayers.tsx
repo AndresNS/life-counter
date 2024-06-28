@@ -7,7 +7,7 @@ import { StyleSheet, View } from "react-native";
 const totalPlayers = 4;
 
 export default function FourPlayersLayout(): JSX.Element {
-  const { game, updatePlayerLifeTotal } = useGameContext();
+  const { game } = useGameContext();
 
   return (
     <View style={styles.container}>
@@ -15,32 +15,20 @@ export default function FourPlayersLayout(): JSX.Element {
         <Counter
           style={{ flex: 1 }}
           player={game.players[0]}
-          setLifeTotal={updatePlayerLifeTotal}
           rotation="180"
           totalPlayers={totalPlayers}
         />
         <Counter
           style={{ flex: 1 }}
           player={game.players[1]}
-          setLifeTotal={updatePlayerLifeTotal}
           rotation="0"
           totalPlayers={totalPlayers}
         />
       </View>
       <CounterDivider />
       <View style={styles.counterContainer}>
-        <Counter
-          player={game.players[2]}
-          setLifeTotal={updatePlayerLifeTotal}
-          rotation="180"
-          totalPlayers={totalPlayers}
-        />
-        <Counter
-          player={game.players[3]}
-          setLifeTotal={updatePlayerLifeTotal}
-          rotation="0"
-          totalPlayers={totalPlayers}
-        />
+        <Counter player={game.players[2]} rotation="180" totalPlayers={totalPlayers} />
+        <Counter player={game.players[3]} rotation="0" totalPlayers={totalPlayers} />
       </View>
     </View>
   );

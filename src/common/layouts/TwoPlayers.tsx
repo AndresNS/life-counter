@@ -7,23 +7,13 @@ import { StyleSheet, View } from "react-native";
 const totalPlayers = 2;
 
 export default function TwoPlayersLayout(): JSX.Element {
-  const { game, updatePlayerLifeTotal } = useGameContext();
+  const { game } = useGameContext();
 
   return (
     <View style={styles.container}>
-      <Counter
-        player={game.players[0]}
-        setLifeTotal={updatePlayerLifeTotal}
-        rotation="270"
-        totalPlayers={totalPlayers}
-      />
+      <Counter player={game.players[0]} rotation="270" totalPlayers={totalPlayers} />
       <CounterDivider />
-      <Counter
-        player={game.players[1]}
-        setLifeTotal={updatePlayerLifeTotal}
-        rotation="90"
-        totalPlayers={totalPlayers}
-      />
+      <Counter player={game.players[1]} rotation="90" totalPlayers={totalPlayers} />
     </View>
   );
 }

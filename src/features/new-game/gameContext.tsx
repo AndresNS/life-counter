@@ -62,12 +62,16 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const updatePlayerLifeTotal = (playerId: string, newLifeTotal: number) => {
-    setGame((prevGameState) => ({
-      ...prevGameState,
-      players: prevGameState.players.map((player) =>
+    setGame((prevGameState) => {
+      const updatedPlayers = prevGameState.players.map((player) =>
         player.playerId === playerId ? { ...player, lifeTotal: newLifeTotal } : player,
-      ),
-    }));
+      );
+
+      return {
+        ...prevGameState,
+        players: updatedPlayers,
+      };
+    });
   };
 
   const updateStartingLife = (playerId: string, newLifeTotal: number) => {
