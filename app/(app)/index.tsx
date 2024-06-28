@@ -1,5 +1,5 @@
 import Button from "@common/components/Button";
-import DefaultLayout from "@common/layouts/default";
+import DefaultLayout from "@common/layouts/Default";
 import palette from "@constants/colors";
 import PresetList from "@features/presets/PresetsList";
 import { usePresetsContext } from "@features/presets/presetsContext";

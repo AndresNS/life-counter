@@ -5,7 +5,7 @@ interface ButtonProps {
   text: string;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
-  color?: "primary" | "secondary" | "success" | "warning" | "error" | "info" | string;
+  color?: "primary" | "secondary" | "success" | "warning" | "error" | "info" | "neutral" | string;
 }
 
 export default function Button({
@@ -28,6 +28,8 @@ export default function Button({
         return styles.error;
       case "info":
         return styles.info;
+      case "neutral":
+        return styles.neutral;
       default:
         return styles.primary;
     }
@@ -67,5 +69,8 @@ const styles = StyleSheet.create({
   },
   info: {
     backgroundColor: palette.primary[500],
+  },
+  neutral: {
+    backgroundColor: palette.grays[700],
   },
 });

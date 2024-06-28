@@ -2,7 +2,7 @@
   "expo": {
     "name": "TCG Life Counter",
     "slug": "life-counter",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "orientation": "portrait",
     "scheme": "life-counter",
     "icon": "./src/assets/icon.png",
@@ -20,7 +20,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",

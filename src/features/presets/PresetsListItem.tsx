@@ -2,9 +2,10 @@ import { isUniformArray } from "@common/lib/helpers";
 import palette from "@constants/colors";
 import { Player } from "@constants/types";
 import { FontAwesome } from "@expo/vector-icons";
+import { useGameContext } from "@features/new-game/gameContext";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Button, Dialog, Menu, Portal } from "react-native-paper";
 
 import { usePresetsContext } from "./presetsContext";
@@ -23,47 +24,32 @@ const getStartingLifes = (players: Player[]) => {
 };
 
 export default function PresetListItem({ preset }: IPresetListItemProps): JSX.Element {
-  const { editPreset, deletePreset } = usePresetsContext();
+  const { deletePreset } = usePresetsContext();
+  const { newGame } = useGameContext();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [presetName, setPresetName] = useState(preset.name);
-  const [presetStartingLife, setPresetStartingLife] = useState(
-    getStartingLifes(preset.players)[0].toString(),
-  );
 
   const handleItemPress = () => {
+    newGame({ players: preset.players, presetId: preset.id });
+
     router.push({
       pathname: "/game",
-      params: { ...preset, players: JSON.stringify(preset.players) },
+    });
+  };
+
+  const handleEditPresetPress = () => {
+    newGame({ players: preset.players });
+    closeMenu();
+
+    router.push({
+      pathname: "/edit-preset",
+      params: { preset: JSON.stringify(preset), presetId: preset.id },
     });
   };
 
   const openMenu = () => setMenuVisible(true);
 
   const closeMenu = () => setMenuVisible(false);
-
-  const openEditDialog = () => {
-    closeMenu();
-    setEditDialogVisible(true);
-  };
-
-  const closeEditDialog = () => setEditDialogVisible(false);
-
-  const confirmEdit = () => {
-    closeEditDialog();
-    // set Loading
-    const updatedPreset: Preset = {
-      id: preset.id,
-      name: presetName,
-      players: preset.players.map((player) => ({
-        ...player,
-        startingLife: Number(presetStartingLife),
-      })),
-    };
-
-    editPreset(updatedPreset);
-  };
 
   const openDeleteDialog = () => {
     closeMenu();
@@ -108,7 +94,7 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
           }>
           <Menu.Item
             titleStyle={{ color: palette.neutrals.white }}
-            onPress={openEditDialog}
+            onPress={handleEditPresetPress}
             title="Edit"
           />
           <Menu.Item
@@ -117,46 +103,6 @@ export default function PresetListItem({ preset }: IPresetListItemProps): JSX.El
             title="Delete"
           />
         </Menu>
-        <Portal>
-          <Dialog style={styles.dialog} visible={editDialogVisible} onDismiss={closeEditDialog}>
-            <Dialog.Title style={styles.dialogTitle}>Edit Preset</Dialog.Title>
-            <Dialog.Content>
-              <View style={{ gap: 10 }}>
-                <TextInput
-                  placeholder="Preset Name"
-                  style={styles.textInput}
-                  value={presetName}
-                  onChangeText={setPresetName}
-                  autoFocus
-                />
-                <TextInput
-                  placeholder="Starting Life"
-                  style={styles.textInput}
-                  value={presetStartingLife.toString()}
-                  onChangeText={setPresetStartingLife}
-                  keyboardType="numeric"
-                />
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                mode="outlined"
-                contentStyle={styles.dialogButton}
-                textColor={palette.primary[500]}
-                onPress={closeEditDialog}>
-                Cancel
-              </Button>
-              <Button
-                contentStyle={styles.dialogButton}
-                mode="contained"
-                buttonColor={palette.primary[500]}
-                textColor={palette.neutrals.white}
-                onPress={confirmEdit}>
-                Save Changes
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
         <Portal>
           <Dialog style={styles.dialog} visible={deleteDialogVisible} onDismiss={closeDeleteDialog}>
             <Dialog.Title style={styles.dialogTitle}>Confirm Delete</Dialog.Title>

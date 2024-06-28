@@ -1,14 +1,13 @@
+import { getBackgroundColor, getTextColor } from "@common/lib/helpers";
 import palette from "@constants/colors";
-import { LifeTotal } from "@constants/types";
-import { useRef, useState } from "react";
+import { Player } from "@constants/types";
+import { useGameContext } from "@features/new-game/gameContext";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Pressable, Text, ViewStyle, TextStyle } from "react-native";
 
 interface ICounterProps {
-  backgroundColor?: string;
-  lifeTotal: number;
   rotation?: RotationKey;
-  playerId: string;
-  setLifeTotal: React.Dispatch<React.SetStateAction<LifeTotal>>;
+  player: Player;
   style?: ViewStyle;
   totalPlayers: number;
 }
@@ -18,44 +17,95 @@ enum CounterModes {
   Decrement = "decrement",
 }
 
-type RotationKey = keyof typeof rotationValues;
+type RotationKey = keyof typeof buttonRotationValues;
 
 const longPressStep = 5;
-const rotationValues = {
+const buttonRotationValues = {
   "0": "column",
   "90": "row-reverse",
   "180": "column-reverse",
   "270": "row",
 } as const;
 
+const textRotationValues = {
+  "0": "column-reverse",
+  "90": "row",
+  "180": "column",
+  "270": "row-reverse",
+} as const;
+
+const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
+  switch (rotation) {
+    case "0":
+      return {
+        left: 0,
+        height: "100%",
+        width: "50%",
+      };
+    case "90":
+      return {
+        top: 0,
+        height: "50%",
+        width: "100%",
+      };
+    case "180":
+      return {
+        right: 0,
+        width: "50%",
+        height: "100%",
+      };
+    case "270":
+      return {
+        bottom: 0,
+        height: "50%",
+        width: "100%",
+      };
+  }
+};
+
 export default function Counter({
-  backgroundColor,
-  lifeTotal,
   rotation = "0",
-  playerId,
-  setLifeTotal,
+  player,
   style,
   totalPlayers = 2,
 }: ICounterProps): JSX.Element {
+  const { updatePlayerLifeTotal } = useGameContext();
   const [isPressed, setIsPressed] = useState({
     increment: false,
     decrement: false,
   });
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [lifeChange, setLifeChange] = useState<number>(0);
+  const currentLifeTotal = useRef<number>(player.lifeTotal);
+  const previousLifeTotal = useRef<number>(player.lifeTotal);
+  const longPressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lifeChangeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    setLifeChange(player.lifeTotal - previousLifeTotal.current);
+
+    if (lifeChangeIntervalRef.current) clearInterval(lifeChangeIntervalRef.current);
+
+    lifeChangeIntervalRef.current = setInterval(() => {
+      previousLifeTotal.current = currentLifeTotal.current;
+      setLifeChange(0);
+    }, 2000);
+
+    currentLifeTotal.current = player.lifeTotal;
+
+    return () => {
+      if (lifeChangeIntervalRef.current) clearInterval(lifeChangeIntervalRef.current);
+    };
+  }, [player.lifeTotal]);
 
   const updateCounter = (mode: string, step = 1) => {
     switch (mode) {
       case CounterModes.Increment:
-        setLifeTotal((prevLifeTotal) => ({
-          ...prevLifeTotal,
-          [playerId]: prevLifeTotal[playerId] + step,
-        }));
+        currentLifeTotal.current += step;
+        updatePlayerLifeTotal(player.playerId, currentLifeTotal.current);
         break;
       case CounterModes.Decrement:
-        setLifeTotal((prevLifeTotal) => ({
-          ...prevLifeTotal,
-          [playerId]: prevLifeTotal[playerId] - step,
-        }));
+        currentLifeTotal.current -= step;
+        updatePlayerLifeTotal(player.playerId, currentLifeTotal.current);
         break;
       default:
         console.log("Mode not supported");
@@ -63,48 +113,112 @@ export default function Counter({
   };
 
   const handlePressIn = (mode: string): void => {
-    setIsPressed({ ...isPressed, [mode]: true });
+    setIsPressed((prev) => ({ ...prev, [mode]: true }));
   };
 
   const handlePressOut = (mode: string): void => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    setIsPressed({ ...isPressed, [mode]: false });
+    if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
+    setIsPressed((prev) => ({ ...prev, [mode]: false }));
   };
 
-  const handleLongPress = (mode: string): void => {
-    updateCounter(mode, longPressStep);
-
-    intervalRef.current = setInterval(() => {
+  const handleLongPress = useCallback(
+    (mode: string): void => {
       updateCounter(mode, longPressStep);
-    }, 700);
-  };
+
+      if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
+
+      longPressIntervalRef.current = setInterval(() => {
+        console.log("tick");
+        updateCounter(mode, longPressStep);
+      }, 700);
+    },
+    [updateCounter],
+  );
 
   const containerStyle: ViewStyle = {
     ...styles.counterContainer,
-    backgroundColor: backgroundColor || palette.customs[1],
+    backgroundColor: getBackgroundColor(player),
+  };
+
+  const textContainerRotationStyle: ViewStyle = {
+    flexDirection: textRotationValues[rotation],
   };
 
   const buttonsRotationStyle: ViewStyle = {
-    flexDirection: rotationValues[rotation],
+    flexDirection: buttonRotationValues[rotation],
   };
 
   const textRotationStyle: TextStyle = {
-    transform: [{ rotate: `${rotation}deg` }],
+    transform: [{ rotate: `${Number(rotation) - 90}deg` }],
   };
 
   const counterTextStyle: TextStyle = {
-    fontSize: totalPlayers === 2 ? 150 : 100,
+    fontSize: totalPlayers === 2 ? 140 : 100,
+    color: getTextColor(player),
   };
 
   const buttonTextStyle: TextStyle = {
     fontSize: totalPlayers === 2 ? 50 : 30,
+    color: getTextColor(player),
+  };
+
+  const lifeChangeLabelStyle: TextStyle = {
+    fontSize: totalPlayers === 2 ? 30 : 20,
+    color: getTextColor(player),
+  };
+
+  const labelRotationStyle: ViewStyle = {
+    ...getLabelRotationStyles(rotation),
   };
 
   return (
     <View style={[containerStyle, style]}>
-      <Text selectable={false} style={[styles.counterText, textRotationStyle, counterTextStyle]}>
-        {lifeTotal}
-      </Text>
+      <View style={[styles.textContainer, textContainerRotationStyle]}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text selectable={false} style={[buttonTextStyle]}>
+            -
+          </Text>
+        </View>
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            flex: 2,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text
+            selectable={false}
+            style={[styles.counterText, textRotationStyle, counterTextStyle]}>
+            {player.lifeTotal}
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text selectable={false} style={[buttonTextStyle]}>
+            +
+          </Text>
+        </View>
+      </View>
+      {lifeChange !== 0 && (
+        <View style={[styles.lifeChangeLabelContainer, labelRotationStyle]}>
+          <Text
+            selectable={false}
+            style={[styles.lifeChangeLabel, textRotationStyle, lifeChangeLabelStyle]}>
+            {lifeChange > 0 && "+"}
+            {lifeChange}
+          </Text>
+        </View>
+      )}
       <View style={[styles.buttonsWrapper, buttonsRotationStyle]}>
         <Pressable
           style={[
@@ -118,18 +232,8 @@ export default function Counter({
           onPress={() => updateCounter(CounterModes.Increment)}
           onLongPress={() => handleLongPress(CounterModes.Increment)}
           onPressIn={() => handlePressIn(CounterModes.Increment)}
-          onPressOut={() => handlePressOut(CounterModes.Increment)}>
-          <Text
-            selectable={false}
-            style={[
-              styles.counterButtonText,
-              textRotationStyle,
-              buttonTextStyle,
-              { paddingBottom: 20 },
-            ]}>
-            +
-          </Text>
-        </Pressable>
+          onPressOut={() => handlePressOut(CounterModes.Increment)}
+        />
         <Pressable
           style={[
             styles.counterButton,
@@ -142,24 +246,22 @@ export default function Counter({
           onPress={() => updateCounter(CounterModes.Decrement)}
           onLongPress={() => handleLongPress(CounterModes.Decrement)}
           onPressIn={() => handlePressIn(CounterModes.Decrement)}
-          onPressOut={() => handlePressOut(CounterModes.Decrement)}>
-          <Text
-            selectable={false}
-            style={[
-              styles.counterButtonText,
-              textRotationStyle,
-              buttonTextStyle,
-              { paddingTop: 20 },
-            ]}>
-            -
-          </Text>
-        </Pressable>
+          onPressOut={() => handlePressOut(CounterModes.Decrement)}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  textContainer: {
+    flexDirection: "row",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
   counterContainer: {
     display: "flex",
     flex: 1,
@@ -167,6 +269,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexGrow: 1,
     borderRadius: 20,
+    position: "relative",
   },
   buttonsWrapper: {
     position: "absolute",
@@ -181,9 +284,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   counterButtonText: {
-    color: "#fff",
+    color: palette.neutrals.white,
   },
-  counterText: {
-    color: "#fff",
+  counterText: {},
+  lifeChangeLabel: {
+    color: palette.neutrals.white,
+  },
+  lifeChangeLabelContainer: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

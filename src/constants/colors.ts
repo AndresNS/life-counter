@@ -91,6 +91,8 @@ const palette = {
     black: "#000000",
     white: "#ffffff",
   },
-};
+} as const;
 
 export default palette;
+export type CustomColorsKeys = keyof typeof palette.customs;
+export type ColorRoles = keyof typeof palette;
