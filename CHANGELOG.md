@@ -50,11 +50,14 @@ Versioning Example:
 ### Changed
 
 - Change the position of counter buttons from vertical to horizontal.
+- Update edit dialog to allow editing all features of the counter.
 
 ### Added
 
 - Add life change label.
 - Add feature to customize counter background color and theme in new game page.
+- Add ingame settings to customize player color.
+- Add support for asymmetric starting life totals.
 
 ## [0.4.0] 2024/06/13
 
