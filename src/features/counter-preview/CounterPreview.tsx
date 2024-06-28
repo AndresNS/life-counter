@@ -75,29 +75,25 @@ export default function CounterPreview({
 
 const styles = StyleSheet.create({
   counterContainer: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    flexGrow: 1,
     paddingVertical: 10,
     borderRadius: 10,
   },
   textContainer: {
-    justifyContent: "center",
     alignItems: "center",
-    paddingTop: 10,
-    width: "100%",
   },
   counterText: {
     fontSize: 60,
   },
   buttonsContainer: {
     justifyContent: "center",
-    alignItems: "center",
     flexDirection: "row",
     gap: 5,
-    width: "100%",
   },
-  button: { padding: 10 },
+  button: {
+    padding: 10,
+  },
   buttonIcon: {},
 });

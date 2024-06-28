@@ -1,6 +1,6 @@
 import Header from "@common/components/Header";
 import { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 interface DefaultLayoutProps {
   children?: ReactNode;
@@ -14,7 +14,7 @@ export default function DefaultLayout({
   return (
     <View style={styles.container}>
       <Header title={title} />
-      {children}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>{children}</ScrollView>
     </View>
   );
 }

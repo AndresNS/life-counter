@@ -29,7 +29,6 @@ export default function FourPlayerPreview({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: palette.neutrals.black,
     flexDirection: "row",
     padding: 5,

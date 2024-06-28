@@ -23,7 +23,6 @@ export default function TwoPlayersPreview({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: palette.neutrals.black,
     gap: 4,

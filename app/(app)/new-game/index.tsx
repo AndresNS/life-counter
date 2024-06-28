@@ -234,7 +234,6 @@ export default function NewGame(): JSX.Element {
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
     alignItems: "center",
     backgroundColor: palette.grays[900],
     flex: 1,
@@ -243,8 +242,8 @@ const styles = StyleSheet.create({
   },
   settingsContainer: {
     width: "100%",
-    flex: 1,
     gap: 5,
+    marginBottom: 20,
   },
   section: {
     paddingHorizontal: 5,
@@ -283,7 +282,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     lineHeight: 25,
   },
-  buttonsContainer: { width: "100%", flexDirection: "row", gap: 10 },
+  buttonsContainer: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 10,
+    marginTop: "auto",
+  },
   actionButton: {
     flex: 1,
   },

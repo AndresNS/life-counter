@@ -28,7 +28,6 @@ export default function ThreePlayersPreview({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: palette.neutrals.black,
     padding: 5,
@@ -37,7 +36,6 @@ const styles = StyleSheet.create({
   },
   leftCounters: {
     flex: 1.5,
-    width: "100%",
     gap: 4,
   },
   rightCounter: { flex: 1, height: "100%" },
