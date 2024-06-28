@@ -17,14 +17,21 @@ enum CounterModes {
   Decrement = "decrement",
 }
 
-type RotationKey = keyof typeof rotationValues;
+type RotationKey = keyof typeof buttonRotationValues;
 
 const longPressStep = 5;
-const rotationValues = {
+const buttonRotationValues = {
   "0": "column",
   "90": "row-reverse",
   "180": "column-reverse",
   "270": "row",
+} as const;
+
+const textRotationValues = {
+  "0": "column-reverse",
+  "90": "row",
+  "180": "column",
+  "270": "row-reverse",
 } as const;
 
 const getLabelRotationStyles = (rotation: RotationKey): ViewStyle => {
@@ -133,8 +140,12 @@ export default function Counter({
     backgroundColor: getBackgroundColor(player),
   };
 
+  const textContainerRotationStyle: ViewStyle = {
+    flexDirection: textRotationValues[rotation],
+  };
+
   const buttonsRotationStyle: ViewStyle = {
-    flexDirection: rotationValues[rotation],
+    flexDirection: buttonRotationValues[rotation],
   };
 
   const textRotationStyle: TextStyle = {
@@ -162,9 +173,42 @@ export default function Counter({
 
   return (
     <View style={[containerStyle, style]}>
-      <Text selectable={false} style={[styles.counterText, textRotationStyle, counterTextStyle]}>
-        {player.lifeTotal}
-      </Text>
+      <View style={[styles.textContainer, textContainerRotationStyle]}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text selectable={false} style={[buttonTextStyle]}>
+            -
+          </Text>
+        </View>
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            flex: 2,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text
+            selectable={false}
+            style={[styles.counterText, textRotationStyle, counterTextStyle]}>
+            {player.lifeTotal}
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text selectable={false} style={[buttonTextStyle]}>
+            +
+          </Text>
+        </View>
+      </View>
       {lifeChange !== 0 && (
         <View style={[styles.lifeChangeLabelContainer, labelRotationStyle]}>
           <Text
@@ -188,18 +232,8 @@ export default function Counter({
           onPress={() => updateCounter(CounterModes.Increment)}
           onLongPress={() => handleLongPress(CounterModes.Increment)}
           onPressIn={() => handlePressIn(CounterModes.Increment)}
-          onPressOut={() => handlePressOut(CounterModes.Increment)}>
-          <Text
-            selectable={false}
-            style={[
-              styles.counterButtonText,
-              textRotationStyle,
-              buttonTextStyle,
-              { paddingLeft: 20 },
-            ]}>
-            +
-          </Text>
-        </Pressable>
+          onPressOut={() => handlePressOut(CounterModes.Increment)}
+        />
         <Pressable
           style={[
             styles.counterButton,
@@ -212,25 +246,22 @@ export default function Counter({
           onPress={() => updateCounter(CounterModes.Decrement)}
           onLongPress={() => handleLongPress(CounterModes.Decrement)}
           onPressIn={() => handlePressIn(CounterModes.Decrement)}
-          onPressOut={() => handlePressOut(CounterModes.Decrement)}>
-          <Text
-            selectable={false}
-            style={[
-              styles.counterButtonText,
-              textRotationStyle,
-              buttonTextStyle,
-
-              { paddingRight: 20 },
-            ]}>
-            -
-          </Text>
-        </Pressable>
+          onPressOut={() => handlePressOut(CounterModes.Decrement)}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  textContainer: {
+    flexDirection: "row",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
   counterContainer: {
     display: "flex",
     flex: 1,
@@ -253,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   counterButtonText: {
-    color: "#fff",
+    color: palette.neutrals.white,
   },
   counterText: {},
   lifeChangeLabel: {
