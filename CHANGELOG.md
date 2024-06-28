@@ -45,7 +45,7 @@ Versioning Example:
 
 # Changelog
 
-## [Unreleased]
+## [0.5.0] 2024/06/27
 
 ### Changed
 
